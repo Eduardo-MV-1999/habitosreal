@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Hábitos Diarios + Calendario</title>
-    <!-- Chart.js CDN para la gráfica -->
+    <title>Mis Hábitos Diarios</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         * {
@@ -38,6 +37,14 @@
             border-bottom: 2px solid #cbdde9;
             padding-bottom: 0.5rem;
             flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .tab-group {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
         }
 
         .tab-btn {
@@ -56,6 +63,23 @@
             background: #2b6a8f;
             color: white;
             box-shadow: 0 2px 8px rgba(43,106,143,0.3);
+        }
+
+        .reset-btn {
+            background: #e15a46;
+            color: white;
+            border: none;
+            padding: 0.4rem 1.2rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: 0.2s;
+        }
+
+        .reset-btn:hover {
+            background: #c94a36;
+            transform: scale(0.97);
         }
 
         .tab-content {
@@ -98,7 +122,6 @@
             border-radius: 2rem;
         }
 
-        /* Nueva sección para crear hábito con días */
         .add-habit-area {
             display: flex;
             flex-direction: column;
@@ -177,11 +200,6 @@
             background: #2b6a8f;
             color: white;
             border-color: #2b6a8f;
-        }
-
-        .day-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
         }
 
         .habits-list {
@@ -380,7 +398,6 @@
             color: #7a93ab;
         }
 
-        /* Modal de confirmación */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -488,14 +505,27 @@
             .habit-info {
                 gap: 0.5rem;
             }
+            .tabs {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .tab-group {
+                justify-content: center;
+            }
+            .reset-btn {
+                align-self: center;
+            }
         }
     </style>
 </head>
 <body>
 <div class="app">
     <div class="tabs">
-        <button class="tab-btn active" data-tab="today">📅 Hoy / Día</button>
-        <button class="tab-btn" data-tab="calendar">📆 Calendario</button>
+        <div class="tab-group">
+            <button class="tab-btn active" data-tab="today">📅 Hoy / Día</button>
+            <button class="tab-btn" data-tab="calendar">📆 Calendario</button>
+        </div>
+        <button class="reset-btn" id="resetHabitsBtn">🔄 Restablecer hábitos</button>
     </div>
 
     <div id="todayTab" class="tab-content active-tab">
@@ -504,10 +534,9 @@
             <div class="stats-small" id="dailyStatsLabel">0/0 completados</div>
         </div>
 
-        <!-- Área de creación con selector de días -->
         <div class="add-habit-area">
             <div class="add-habit-row">
-                <input type="text" id="newHabitName" placeholder="Nuevo hábito (ej: Correr, Leer, Dormir bien)" autocomplete="off">
+                <input type="text" id="newHabitName" placeholder="Nuevo hábito (ej: Correr, Leer)" autocomplete="off">
                 <button id="createHabitBtn">+ Crear</button>
             </div>
             <div class="days-selector">
@@ -544,7 +573,6 @@
     <footer>✅ Cada hábito se registra por día. Marca el check para cumplirlo. Los datos se guardan automáticamente.</footer>
 </div>
 
-<!-- Modal de confirmación -->
 <div class="modal-overlay" id="confirmModal">
     <div class="modal-box">
         <h3>⚠️ ¿Eliminar hábito?</h3>
@@ -556,14 +584,40 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="resetModal">
+    <div class="modal-box">
+        <h3>⚠️ Restablecer hábitos</h3>
+        <p>Esto eliminará todos tus hábitos actuales y los reemplazará con los hábitos predefinidos. ¿Continuar?</p>
+        <div class="modal-actions">
+            <button class="modal-btn cancel" id="resetCancel">Cancelar</button>
+            <button class="modal-btn confirm" id="resetConfirm">Restablecer</button>
+        </div>
+    </div>
+</div>
+
 <script>
+    // ---------- HÁBITOS PREDEFINIDOS (TUS RUTINAS) ----------
+    // Días: 0=Lunes, 1=Martes, 2=Miércoles, 3=Jueves, 4=Viernes, 5=Sábado, 6=Domingo
+    const DEFAULT_HABITS = [
+        { id: 'h1', name: '1. Lagartijas y escaladoras', days: [0, 1, 2, 3, 4] },
+        { id: 'h2', name: '2. Leer 20 min', days: [0, 1, 2, 3, 4, 5, 6] },
+        { id: 'h3', name: '3. 2 Litros de agua', days: [0, 1, 2, 3, 4, 5, 6] },
+        { id: 'h4', name: '4. Tender cama', days: [0, 1, 2, 3, 4, 5, 6] },
+        { id: 'h5', name: '5. Cardio', days: [0, 1, 2, 3, 4] },
+        { id: 'h6', name: '6. Crema car', days: [0, 1, 2, 3, 4, 5, 6] },
+        { id: 'h7', name: '7. Baño', days: [0, 1, 2, 3, 4, 5, 6] },
+        { id: 'h8', name: '8. Lavado de dientes', days: [0, 1, 2, 3, 4, 5, 6] },
+        { id: 'h9', name: '9. Espalda y hombro', days: [0, 3] },
+        { id: 'h10', name: '10. Pierna', days: [1, 4] },
+        { id: 'h11', name: '11. Pecho y brazo', days: [2, 5] }
+    ];
+
     // ---------- MODELO DE DATOS ----------
-    // habits: array de { id, name, days: [0-6], completions: { "YYYY-MM-DD": boolean } }
     let habits = [];
     let currentViewDate = new Date();
     let currentCalendarYear = new Date().getFullYear();
     let currentCalendarMonth = new Date().getMonth();
-    let pendingDeleteId = null; // ID del hábito a eliminar
+    let pendingDeleteId = null;
 
     // Elementos DOM
     const habitsListEl = document.getElementById('habitsListToday');
@@ -579,13 +633,17 @@
     const modalMessage = document.getElementById('modalMessage');
     const modalConfirm = document.getElementById('modalConfirm');
     const modalCancel = document.getElementById('modalCancel');
+    const resetModal = document.getElementById('resetModal');
+    const resetConfirm = document.getElementById('resetConfirm');
+    const resetCancel = document.getElementById('resetCancel');
+    const resetBtn = document.getElementById('resetHabitsBtn');
     const dayBtns = document.querySelectorAll('.day-btn[data-day]');
     const selectAllBtn = document.getElementById('selectAllDays');
     const clearAllBtn = document.getElementById('clearAllDays');
     let progressChart = null;
-    let selectedDays = [0, 1, 2, 3, 4, 5, 6]; // Por defecto todos los días
+    let selectedDays = [0, 1, 2, 3, 4, 5, 6];
 
-    // Funciones de fecha (local)
+    // ---------- FUNCIONES DE FECHA CORREGIDAS ----------
     function formatLocalDate(date) {
         let y = date.getFullYear();
         let m = String(date.getMonth() + 1).padStart(2, '0');
@@ -606,14 +664,28 @@
         return formatLocalDate(currentViewDate);
     }
 
+    // CORRECCIÓN: Conversión correcta de días de la semana
+    // Nuestro sistema: 0=Lun, 1=Mar, 2=Mié, 3=Jue, 4=Vie, 5=Sáb, 6=Dom
+    // JavaScript:      0=Dom, 1=Lun, 2=Mar, 3=Mié, 4=Jue, 5=Vie, 6=Sáb
     function getDayOfWeek(dateStr) {
         const date = parseLocalDate(dateStr);
-        return date.getDay(); // 0=domingo, 6=sábado
+        const jsDay = date.getDay(); // 0=Dom, 1=Lun, ..., 6=Sáb
+        
+        // Mapeo inverso: convertir de JS a nuestro sistema
+        // JS: 0=Dom → nuestro: 6
+        // JS: 1=Lun → nuestro: 0
+        // JS: 2=Mar → nuestro: 1
+        // JS: 3=Mié → nuestro: 2
+        // JS: 4=Jue → nuestro: 3
+        // JS: 5=Vie → nuestro: 4
+        // JS: 6=Sáb → nuestro: 5
+        if (jsDay === 0) return 6; // Domingo
+        return jsDay - 1; // Lunes(1)->0, Martes(2)->1, ...
     }
 
-    // Funciones de hábitos
+    // ---------- FUNCIONES DE HÁBITOS ----------
     function isHabitActiveOnDate(habit, dateStr) {
-        if (!habit.days || habit.days.length === 0) return true; // Si no tiene días definidos, siempre activo
+        if (!habit.days || habit.days.length === 0) return true;
         const dayOfWeek = getDayOfWeek(dateStr);
         return habit.days.includes(dayOfWeek);
     }
@@ -634,9 +706,18 @@
         return (completedCount / activeHabits.length) * 100;
     }
 
-    // Guardar/recuperar
+    // ---------- GUARDAR Y CARGAR ----------
     function saveToLocalStorage() {
         localStorage.setItem('habitCalendarApp', JSON.stringify({ habits: habits, version: '3.0' }));
+    }
+
+    // FORZAR cargar los hábitos predefinidos SIEMPRE al inicio
+    function loadDefaultHabits() {
+        habits = DEFAULT_HABITS.map(h => ({
+            ...h,
+            completions: {}
+        }));
+        saveToLocalStorage();
     }
 
     function loadData() {
@@ -644,46 +725,39 @@
         if (stored) {
             try {
                 const parsed = JSON.parse(stored);
-                if (parsed.habits && Array.isArray(parsed.habits)) {
+                if (parsed.habits && Array.isArray(parsed.habits) && parsed.habits.length > 0) {
+                    // Verificar que los hábitos guardados coinciden con los predefinidos
+                    // Si no coinciden, forzar recarga
+                    const savedIds = parsed.habits.map(h => h.id).sort();
+                    const defaultIds = DEFAULT_HABITS.map(h => h.id).sort();
+                    
+                    // Si los IDs no coinciden exactamente, recargar predefinidos
+                    if (JSON.stringify(savedIds) !== JSON.stringify(defaultIds)) {
+                        loadDefaultHabits();
+                        return;
+                    }
+                    
                     habits = parsed.habits;
                     habits.forEach(h => {
                         if (!h.completions) h.completions = {};
-                        if (!h.days) h.days = [0, 1, 2, 3, 4, 5, 6]; // Por defecto todos los días
+                        if (!h.days || h.days.length === 0) h.days = [0, 1, 2, 3, 4, 5, 6];
                     });
-                } else initDefaultHabits();
-            } catch(e) { initDefaultHabits(); }
-        } else initDefaultHabits();
+                    return;
+                }
+            } catch(e) {}
+        }
+        // Si no hay datos o son inválidos, cargar predefinidos
+        loadDefaultHabits();
     }
 
-    function initDefaultHabits() {
-        const todayStr = getTodayLocalStr();
-        const yesterdayDate = new Date();
-        yesterdayDate.setDate(yesterdayDate.getDate() - 1);
-        const yesterdayStr = formatLocalDate(yesterdayDate);
-        habits = [
-            { 
-                id: 'hab1', 
-                name: '💪 Ejercicio', 
-                days: [1, 3, 5], // Lunes, Miércoles, Viernes
-                completions: { [yesterdayStr]: true } 
-            },
-            { 
-                id: 'hab2', 
-                name: '📚 Leer 20 min', 
-                days: [0, 1, 2, 3, 4, 5, 6], // Todos los días
-                completions: { [todayStr]: true } 
-            },
-            { 
-                id: 'hab3', 
-                name: '🚰 2L agua', 
-                days: [0, 1, 2, 3, 4, 5, 6], // Todos los días
-                completions: {} 
-            }
-        ];
-        saveToLocalStorage();
+    function resetToDefaults() {
+        loadDefaultHabits();
+        renderTodayTab();
+        renderCalendar();
+        updateChart();
     }
 
-    // CRUD
+    // ---------- CRUD ----------
     function setHabitCompletion(habitId, dateStr, completed) {
         const habit = habits.find(h => h.id == habitId);
         if (!habit) return;
@@ -708,7 +782,7 @@
     function addNewHabit(name, days) {
         const trimmed = name.trim();
         if (trimmed === "") return false;
-        const newId = Date.now() + '-' + Math.random().toString(36).substr(2, 6);
+        const newId = 'h' + Date.now();
         habits.push({
             id: newId,
             name: trimmed,
@@ -722,17 +796,7 @@
         return true;
     }
 
-    function editHabitDays(habitId, newDays) {
-        const habit = habits.find(h => h.id == habitId);
-        if (!habit) return;
-        habit.days = newDays;
-        saveToLocalStorage();
-        renderTodayTab();
-        renderCalendar();
-        updateChart();
-    }
-
-    // Renderizar pestaña "Hoy"
+    // ---------- RENDERIZAR ----------
     function renderTodayTab() {
         const dateStr = getCurrentViewDateStr();
         const dateObj = parseLocalDate(dateStr);
@@ -749,17 +813,22 @@
         }
 
         if (activeHabits.length === 0) {
-            habitsListEl.innerHTML = '<li class="empty-message">📅 No hay hábitos activos para este día. Revisa los días de repetición.</li>';
+            habitsListEl.innerHTML = '<li class="empty-message">📅 No hay hábitos programados para este día.</li>';
             dailyStatsLabel.innerText = `0/0 completados`;
             updateChart();
             return;
         }
 
         let completedToday = 0;
+        const dayNames = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
         const itemsHtml = activeHabits.map(habit => {
             const completed = isHabitCompletedOnDate(habit, dateStr);
             if (completed) completedToday++;
-            const daysText = habit.days ? habit.days.map(d => ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'][d]).join(', ') : 'Todos';
+            
+            const daysText = habit.days && habit.days.length > 0 
+                ? habit.days.map(d => dayNames[d]).join(', ')
+                : 'Todos los días';
+            
             return `
                 <li class="habit-card" data-id="${habit.id}">
                     <div class="habit-info">
@@ -768,12 +837,13 @@
                         <span class="habit-days">📅 ${daysText}</span>
                     </div>
                     <div class="habit-actions">
-                        <button class="edit-habit" data-id="${habit.id}" title="Editar días">✎</button>
+                        <button class="edit-habit" data-id="${habit.id}" title="Editar">✎</button>
                         <button class="delete-habit" data-id="${habit.id}" title="Eliminar">✕</button>
                     </div>
                 </li>
             `;
         }).join('');
+        
         habitsListEl.innerHTML = itemsHtml;
         dailyStatsLabel.innerText = `${completedToday}/${activeHabits.length} completados`;
 
@@ -785,7 +855,7 @@
             });
         });
 
-        // Eventos eliminar (con confirmación)
+        // Eventos eliminar
         document.querySelectorAll('.delete-habit').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const hid = btn.getAttribute('data-id');
@@ -798,27 +868,25 @@
             });
         });
 
-        // Eventos editar días
+        // Eventos editar
         document.querySelectorAll('.edit-habit').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const hid = btn.getAttribute('data-id');
                 const habit = habits.find(h => h.id == hid);
                 if (!habit) return;
-                // Seleccionar días actuales en el selector
+                
                 dayBtns.forEach(dbtn => {
                     const day = parseInt(dbtn.dataset.day);
-                    if (habit.days.includes(day)) {
+                    if (habit.days && habit.days.includes(day)) {
                         dbtn.classList.add('selected');
                     } else {
                         dbtn.classList.remove('selected');
                     }
                 });
-                selectedDays = [...habit.days];
+                selectedDays = habit.days ? [...habit.days] : [0, 1, 2, 3, 4, 5, 6];
                 newHabitInput.value = habit.name;
-                // Guardar referencia para editar
                 createBtn.textContent = '✎ Actualizar';
                 createBtn.dataset.editId = hid;
-                // Enfocar input
                 newHabitInput.focus();
             });
         });
@@ -826,7 +894,7 @@
         updateChart();
     }
 
-    // Renderizar calendario
+    // Calendario
     function renderCalendar() {
         const year = currentCalendarYear;
         const month = currentCalendarMonth;
@@ -967,13 +1035,34 @@
         });
     }
 
-    // Inicializar
+    // ---------- INICIALIZAR ----------
     function init() {
         loadData();
         currentViewDate = new Date();
         renderTodayTab();
         renderCalendar();
         updateChart();
+
+        // Botón Restablecer
+        resetBtn.addEventListener('click', () => {
+            resetModal.classList.add('active');
+        });
+
+        resetConfirm.addEventListener('click', () => {
+            resetToDefaults();
+            resetModal.classList.remove('active');
+            alert('¡Hábitos restablecidos correctamente!');
+        });
+
+        resetCancel.addEventListener('click', () => {
+            resetModal.classList.remove('active');
+        });
+
+        resetModal.addEventListener('click', (e) => {
+            if (e.target === resetModal) {
+                resetModal.classList.remove('active');
+            }
+        });
 
         // Crear/Actualizar hábito
         createBtn.addEventListener('click', () => {
@@ -986,7 +1075,6 @@
             }
 
             if (editId) {
-                // Modo edición
                 const habit = habits.find(h => h.id == editId);
                 if (habit) {
                     habit.name = name;
@@ -998,9 +1086,10 @@
                     createBtn.textContent = '+ Crear';
                     delete createBtn.dataset.editId;
                     newHabitInput.value = '';
+                    selectedDays = [0, 1, 2, 3, 4, 5, 6];
+                    updateDaySelection();
                 }
             } else {
-                // Nuevo hábito
                 if (addNewHabit(name, [...selectedDays])) {
                     newHabitInput.value = '';
                 } else {
