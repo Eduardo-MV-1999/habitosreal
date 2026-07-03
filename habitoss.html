@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Hábitos Diarios + Calendario</title>
+    <!-- Chart.js CDN para la gráfica -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(135deg, #eef2f7 0%, #d9e2ec 100%);
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            padding: 1rem;
+            min-height: 100vh;
+        }
+
+        .app {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(4px);
+            border-radius: 2rem;
+            box-shadow: 0 25px 40px -12px rgba(0,0,0,0.25);
+            overflow: hidden;
+            padding: 1.5rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.8rem;
+            border-bottom: 2px solid #cbdde9;
+            padding-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            font-size: 1.2rem;
+            font-weight: 600;
+            padding: 0.6rem 1.4rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #4a627a;
+        }
+
+        .tab-btn.active {
+            background: #2b6a8f;
+            color: white;
+            box-shadow: 0 2px 8px rgba(43,106,143,0.3);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fade 0.2s ease;
+        }
+
+        .tab-content.active-tab {
+            display: block;
+        }
+
+        @keyframes fade {
+            from { opacity: 0; transform: translateY(5px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        .day-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            margin-bottom: 1.2rem;
+            background: #ffffffcc;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+        }
+
+        .selected-date {
+            font-weight: 700;
+            background: #eef3fc;
+            padding: 0.3rem 1rem;
+            border-radius: 2rem;
+            color: #1f5e7e;
+        }
+
+        .stats-small {
+            font-size: 0.9rem;
+            background: #e2eaf1;
+            padding: 0.2rem 1rem;
+            border-radius: 2rem;
+        }
+
+        /* Nueva sección para crear hábito con días */
+        .add-habit-area {
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+            margin: 1rem 0 1.5rem 0;
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 1.5rem;
+            border: 1px solid #deecf5;
+        }
+
+        .add-habit-row {
+            display: flex;
+            gap: 0.7rem;
+            flex-wrap: wrap;
+        }
+
+        .add-habit-row input {
+            flex: 2;
+            padding: 0.8rem 1.2rem;
+            border: 2px solid #cde0ed;
+            border-radius: 3rem;
+            font-size: 0.95rem;
+            background: white;
+            min-width: 150px;
+        }
+
+        .add-habit-row button {
+            background: #2b6a8f;
+            border: none;
+            color: white;
+            padding: 0 1.6rem;
+            border-radius: 3rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .add-habit-row button:hover {
+            background: #1f5575;
+            transform: scale(0.97);
+        }
+
+        .days-selector {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .days-selector label {
+            font-weight: 600;
+            color: #4a627a;
+            font-size: 0.9rem;
+            margin-right: 0.3rem;
+        }
+
+        .day-btn {
+            background: white;
+            border: 2px solid #cde0ed;
+            border-radius: 2rem;
+            padding: 0.3rem 0.8rem;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #4a627a;
+            transition: 0.2s;
+            min-width: 40px;
+        }
+
+        .day-btn:hover {
+            background: #e6f0f9;
+        }
+
+        .day-btn.selected {
+            background: #2b6a8f;
+            color: white;
+            border-color: #2b6a8f;
+        }
+
+        .day-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .habits-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+            margin-top: 1rem;
+        }
+
+        .habit-card {
+            background: white;
+            border-radius: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.6rem 1rem;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+            border: 1px solid #deecf5;
+            transition: 0.2s;
+        }
+
+        .habit-card:hover {
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+
+        .habit-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+            flex-wrap: wrap;
+        }
+
+        .habit-check {
+            width: 26px;
+            height: 26px;
+            cursor: pointer;
+            accent-color: #3b8c6e;
+        }
+
+        .habit-name {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .habit-days {
+            font-size: 0.7rem;
+            color: #7a93ab;
+            background: #eef2f7;
+            padding: 0.2rem 0.6rem;
+            border-radius: 1rem;
+            display: inline-block;
+        }
+
+        .habit-actions {
+            display: flex;
+            gap: 0.3rem;
+        }
+
+        .delete-habit {
+            background: none;
+            border: none;
+            font-size: 1.4rem;
+            cursor: pointer;
+            color: #bdd4e4;
+            padding: 0 0.4rem;
+            transition: 0.2s;
+        }
+
+        .delete-habit:hover {
+            color: #e15a46;
+            transform: scale(1.1);
+        }
+
+        .edit-habit {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #bdd4e4;
+            padding: 0 0.4rem;
+            transition: 0.2s;
+        }
+
+        .edit-habit:hover {
+            color: #2b6a8f;
+            transform: scale(1.1);
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 1rem;
+            margin: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        canvas {
+            max-height: 220px;
+            width: 100%;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+        }
+
+        .month-nav {
+            background: #eef2f7;
+            border: none;
+            padding: 0.4rem 1rem;
+            border-radius: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .month-nav:hover {
+            background: #d9e2ec;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            background: #ffffffc9;
+            border-radius: 1.2rem;
+            padding: 1rem;
+        }
+
+        .weekday {
+            text-align: center;
+            font-weight: bold;
+            color: #2c6b8f;
+            padding: 0.5rem;
+        }
+
+        .cal-day {
+            background: white;
+            border-radius: 1rem;
+            padding: 0.8rem 0.3rem;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.1s;
+            border: 1px solid #d4e2ef;
+            font-weight: 500;
+        }
+
+        .cal-day:hover {
+            background: #e6f0f9;
+            transform: scale(0.97);
+        }
+
+        .cal-day.selected-day {
+            background: #2b6a8f;
+            color: white;
+            border-color: #2b6a8f;
+        }
+
+        .cal-day.inactive-day {
+            opacity: 0.4;
+            background: #f4f6f8;
+        }
+
+        .completion-badge {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-top: 5px;
+            border-radius: 20px;
+            padding: 2px;
+        }
+
+        .badge-high {
+            background: #3ba87e;
+            color: white;
+        }
+        .badge-medium {
+            background: #e9b35f;
+            color: #2d2f31;
+        }
+        .badge-low {
+            background: #c94f4f;
+            color: white;
+        }
+        .badge-inactive {
+            background: #d4d9e0;
+            color: #6a7a8a;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 2rem;
+            color: #7a93ab;
+        }
+
+        /* Modal de confirmación */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(3px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-box {
+            background: white;
+            border-radius: 2rem;
+            padding: 2rem;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3);
+            animation: modalFade 0.3s ease;
+        }
+
+        @keyframes modalFade {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-box h3 {
+            margin-bottom: 0.5rem;
+            color: #1f3b4a;
+        }
+
+        .modal-box p {
+            color: #5c6f87;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 0.6rem 2rem;
+            border-radius: 2rem;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .modal-btn.confirm {
+            background: #e15a46;
+            color: white;
+        }
+
+        .modal-btn.confirm:hover {
+            background: #c94a36;
+        }
+
+        .modal-btn.cancel {
+            background: #eef2f7;
+            color: #4a627a;
+        }
+
+        .modal-btn.cancel:hover {
+            background: #d9e2ec;
+        }
+
+        footer {
+            font-size: 0.7rem;
+            text-align: center;
+            margin-top: 1.8rem;
+            color: #68829e;
+        }
+
+        @media (max-width: 650px) {
+            .app {
+                padding: 1rem;
+            }
+            .calendar-grid {
+                gap: 4px;
+            }
+            .cal-day {
+                padding: 0.4rem 0.1rem;
+                font-size: 0.8rem;
+            }
+            .add-habit-row {
+                flex-direction: column;
+            }
+            .add-habit-row input {
+                width: 100%;
+            }
+            .days-selector {
+                justify-content: center;
+            }
+            .habit-info {
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="today">📅 Hoy / Día</button>
+        <button class="tab-btn" data-tab="calendar">📆 Calendario</button>
+    </div>
+
+    <div id="todayTab" class="tab-content active-tab">
+        <div class="day-header">
+            <div class="selected-date" id="selectedDateLabel">Hoy</div>
+            <div class="stats-small" id="dailyStatsLabel">0/0 completados</div>
+        </div>
+
+        <!-- Área de creación con selector de días -->
+        <div class="add-habit-area">
+            <div class="add-habit-row">
+                <input type="text" id="newHabitName" placeholder="Nuevo hábito (ej: Correr, Leer, Dormir bien)" autocomplete="off">
+                <button id="createHabitBtn">+ Crear</button>
+            </div>
+            <div class="days-selector">
+                <label>📅 Repetir:</label>
+                <button class="day-btn selected" data-day="0">Lun</button>
+                <button class="day-btn selected" data-day="1">Mar</button>
+                <button class="day-btn selected" data-day="2">Mié</button>
+                <button class="day-btn selected" data-day="3">Jue</button>
+                <button class="day-btn selected" data-day="4">Vie</button>
+                <button class="day-btn selected" data-day="5">Sáb</button>
+                <button class="day-btn selected" data-day="6">Dom</button>
+                <button id="selectAllDays" class="day-btn" style="background:#2b6a8f;color:white;border-color:#2b6a8f;">Todos</button>
+                <button id="clearAllDays" class="day-btn" style="background:#e15a46;color:white;border-color:#e15a46;">Ninguno</button>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="progressChart" width="400" height="180" style="max-width:100%; height:auto;"></canvas>
+        </div>
+        <ul id="habitsListToday" class="habits-list">
+            <li class="empty-message">Cargando hábitos...</li>
+        </ul>
+    </div>
+
+    <div id="calendarTab" class="tab-content">
+        <div class="calendar-header">
+            <button id="prevMonth" class="month-nav">◀</button>
+            <h3 id="monthYearDisplay"></h3>
+            <button id="nextMonth" class="month-nav">▶</button>
+        </div>
+        <div class="calendar-grid" id="calendarGrid"></div>
+        <p style="margin-top: 0.8rem; text-align: center; font-size: 0.8rem;">💡 Haz clic en un día para ver y marcar hábitos</p>
+    </div>
+    <footer>✅ Cada hábito se registra por día. Marca el check para cumplirlo. Los datos se guardan automáticamente.</footer>
+</div>
+
+<!-- Modal de confirmación -->
+<div class="modal-overlay" id="confirmModal">
+    <div class="modal-box">
+        <h3>⚠️ ¿Eliminar hábito?</h3>
+        <p id="modalMessage">¿Estás seguro de que quieres eliminar este hábito? Esta acción no se puede deshacer.</p>
+        <div class="modal-actions">
+            <button class="modal-btn cancel" id="modalCancel">Cancelar</button>
+            <button class="modal-btn confirm" id="modalConfirm">Eliminar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ---------- MODELO DE DATOS ----------
+    // habits: array de { id, name, days: [0-6], completions: { "YYYY-MM-DD": boolean } }
+    let habits = [];
+    let currentViewDate = new Date();
+    let currentCalendarYear = new Date().getFullYear();
+    let currentCalendarMonth = new Date().getMonth();
+    let pendingDeleteId = null; // ID del hábito a eliminar
+
+    // Elementos DOM
+    const habitsListEl = document.getElementById('habitsListToday');
+    const selectedDateLabel = document.getElementById('selectedDateLabel');
+    const dailyStatsLabel = document.getElementById('dailyStatsLabel');
+    const newHabitInput = document.getElementById('newHabitName');
+    const createBtn = document.getElementById('createHabitBtn');
+    const calendarGrid = document.getElementById('calendarGrid');
+    const monthYearDisplay = document.getElementById('monthYearDisplay');
+    const prevMonthBtn = document.getElementById('prevMonth');
+    const nextMonthBtn = document.getElementById('nextMonth');
+    const modalOverlay = document.getElementById('confirmModal');
+    const modalMessage = document.getElementById('modalMessage');
+    const modalConfirm = document.getElementById('modalConfirm');
+    const modalCancel = document.getElementById('modalCancel');
+    const dayBtns = document.querySelectorAll('.day-btn[data-day]');
+    const selectAllBtn = document.getElementById('selectAllDays');
+    const clearAllBtn = document.getElementById('clearAllDays');
+    let progressChart = null;
+    let selectedDays = [0, 1, 2, 3, 4, 5, 6]; // Por defecto todos los días
+
+    // Funciones de fecha (local)
+    function formatLocalDate(date) {
+        let y = date.getFullYear();
+        let m = String(date.getMonth() + 1).padStart(2, '0');
+        let d = String(date.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    }
+
+    function getTodayLocalStr() {
+        return formatLocalDate(new Date());
+    }
+
+    function parseLocalDate(dateStr) {
+        let [y, m, d] = dateStr.split('-').map(Number);
+        return new Date(y, m - 1, d);
+    }
+
+    function getCurrentViewDateStr() {
+        return formatLocalDate(currentViewDate);
+    }
+
+    function getDayOfWeek(dateStr) {
+        const date = parseLocalDate(dateStr);
+        return date.getDay(); // 0=domingo, 6=sábado
+    }
+
+    // Funciones de hábitos
+    function isHabitActiveOnDate(habit, dateStr) {
+        if (!habit.days || habit.days.length === 0) return true; // Si no tiene días definidos, siempre activo
+        const dayOfWeek = getDayOfWeek(dateStr);
+        return habit.days.includes(dayOfWeek);
+    }
+
+    function isHabitCompletedOnDate(habit, dateStr) {
+        if (!habit.completions) return false;
+        return habit.completions[dateStr] === true;
+    }
+
+    function getActiveHabitsForDate(dateStr) {
+        return habits.filter(h => isHabitActiveOnDate(h, dateStr));
+    }
+
+    function getCompletionPercentageForDate(dateStr) {
+        const activeHabits = getActiveHabitsForDate(dateStr);
+        if (activeHabits.length === 0) return 0;
+        let completedCount = activeHabits.filter(h => isHabitCompletedOnDate(h, dateStr)).length;
+        return (completedCount / activeHabits.length) * 100;
+    }
+
+    // Guardar/recuperar
+    function saveToLocalStorage() {
+        localStorage.setItem('habitCalendarApp', JSON.stringify({ habits: habits, version: '3.0' }));
+    }
+
+    function loadData() {
+        const stored = localStorage.getItem('habitCalendarApp');
+        if (stored) {
+            try {
+                const parsed = JSON.parse(stored);
+                if (parsed.habits && Array.isArray(parsed.habits)) {
+                    habits = parsed.habits;
+                    habits.forEach(h => {
+                        if (!h.completions) h.completions = {};
+                        if (!h.days) h.days = [0, 1, 2, 3, 4, 5, 6]; // Por defecto todos los días
+                    });
+                } else initDefaultHabits();
+            } catch(e) { initDefaultHabits(); }
+        } else initDefaultHabits();
+    }
+
+    function initDefaultHabits() {
+        const todayStr = getTodayLocalStr();
+        const yesterdayDate = new Date();
+        yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+        const yesterdayStr = formatLocalDate(yesterdayDate);
+        habits = [
+            { 
+                id: 'hab1', 
+                name: '💪 Ejercicio', 
+                days: [1, 3, 5], // Lunes, Miércoles, Viernes
+                completions: { [yesterdayStr]: true } 
+            },
+            { 
+                id: 'hab2', 
+                name: '📚 Leer 20 min', 
+                days: [0, 1, 2, 3, 4, 5, 6], // Todos los días
+                completions: { [todayStr]: true } 
+            },
+            { 
+                id: 'hab3', 
+                name: '🚰 2L agua', 
+                days: [0, 1, 2, 3, 4, 5, 6], // Todos los días
+                completions: {} 
+            }
+        ];
+        saveToLocalStorage();
+    }
+
+    // CRUD
+    function setHabitCompletion(habitId, dateStr, completed) {
+        const habit = habits.find(h => h.id == habitId);
+        if (!habit) return;
+        if (!habit.completions) habit.completions = {};
+        if (completed) habit.completions[dateStr] = true;
+        else delete habit.completions[dateStr];
+        saveToLocalStorage();
+        if (dateStr === getCurrentViewDateStr()) renderTodayTab();
+        renderCalendar();
+        updateChart();
+    }
+
+    function deleteHabitById(id) {
+        habits = habits.filter(h => h.id != id);
+        saveToLocalStorage();
+        renderTodayTab();
+        renderCalendar();
+        updateChart();
+        pendingDeleteId = null;
+    }
+
+    function addNewHabit(name, days) {
+        const trimmed = name.trim();
+        if (trimmed === "") return false;
+        const newId = Date.now() + '-' + Math.random().toString(36).substr(2, 6);
+        habits.push({
+            id: newId,
+            name: trimmed,
+            days: days || [0, 1, 2, 3, 4, 5, 6],
+            completions: {}
+        });
+        saveToLocalStorage();
+        renderTodayTab();
+        renderCalendar();
+        updateChart();
+        return true;
+    }
+
+    function editHabitDays(habitId, newDays) {
+        const habit = habits.find(h => h.id == habitId);
+        if (!habit) return;
+        habit.days = newDays;
+        saveToLocalStorage();
+        renderTodayTab();
+        renderCalendar();
+        updateChart();
+    }
+
+    // Renderizar pestaña "Hoy"
+    function renderTodayTab() {
+        const dateStr = getCurrentViewDateStr();
+        const dateObj = parseLocalDate(dateStr);
+        const formattedDate = dateObj.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        selectedDateLabel.innerText = `📌 ${formattedDate}`;
+
+        const activeHabits = getActiveHabitsForDate(dateStr);
+
+        if (!habits.length) {
+            habitsListEl.innerHTML = '<li class="empty-message">✨ Sin hábitos. Crea uno arriba.</li>';
+            dailyStatsLabel.innerText = `0/0 completados`;
+            updateChart();
+            return;
+        }
+
+        if (activeHabits.length === 0) {
+            habitsListEl.innerHTML = '<li class="empty-message">📅 No hay hábitos activos para este día. Revisa los días de repetición.</li>';
+            dailyStatsLabel.innerText = `0/0 completados`;
+            updateChart();
+            return;
+        }
+
+        let completedToday = 0;
+        const itemsHtml = activeHabits.map(habit => {
+            const completed = isHabitCompletedOnDate(habit, dateStr);
+            if (completed) completedToday++;
+            const daysText = habit.days ? habit.days.map(d => ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'][d]).join(', ') : 'Todos';
+            return `
+                <li class="habit-card" data-id="${habit.id}">
+                    <div class="habit-info">
+                        <input type="checkbox" class="habit-check" data-id="${habit.id}" ${completed ? 'checked' : ''}>
+                        <span class="habit-name">${escapeHtml(habit.name)}</span>
+                        <span class="habit-days">📅 ${daysText}</span>
+                    </div>
+                    <div class="habit-actions">
+                        <button class="edit-habit" data-id="${habit.id}" title="Editar días">✎</button>
+                        <button class="delete-habit" data-id="${habit.id}" title="Eliminar">✕</button>
+                    </div>
+                </li>
+            `;
+        }).join('');
+        habitsListEl.innerHTML = itemsHtml;
+        dailyStatsLabel.innerText = `${completedToday}/${activeHabits.length} completados`;
+
+        // Eventos checkboxes
+        document.querySelectorAll('.habit-check').forEach(cb => {
+            cb.addEventListener('change', (e) => {
+                const hid = cb.getAttribute('data-id');
+                setHabitCompletion(hid, dateStr, cb.checked);
+            });
+        });
+
+        // Eventos eliminar (con confirmación)
+        document.querySelectorAll('.delete-habit').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const hid = btn.getAttribute('data-id');
+                const habit = habits.find(h => h.id == hid);
+                if (habit) {
+                    pendingDeleteId = hid;
+                    modalMessage.textContent = `¿Estás seguro de que quieres eliminar "${habit.name}"? Esta acción no se puede deshacer.`;
+                    modalOverlay.classList.add('active');
+                }
+            });
+        });
+
+        // Eventos editar días
+        document.querySelectorAll('.edit-habit').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const hid = btn.getAttribute('data-id');
+                const habit = habits.find(h => h.id == hid);
+                if (!habit) return;
+                // Seleccionar días actuales en el selector
+                dayBtns.forEach(dbtn => {
+                    const day = parseInt(dbtn.dataset.day);
+                    if (habit.days.includes(day)) {
+                        dbtn.classList.add('selected');
+                    } else {
+                        dbtn.classList.remove('selected');
+                    }
+                });
+                selectedDays = [...habit.days];
+                newHabitInput.value = habit.name;
+                // Guardar referencia para editar
+                createBtn.textContent = '✎ Actualizar';
+                createBtn.dataset.editId = hid;
+                // Enfocar input
+                newHabitInput.focus();
+            });
+        });
+
+        updateChart();
+    }
+
+    // Renderizar calendario
+    function renderCalendar() {
+        const year = currentCalendarYear;
+        const month = currentCalendarMonth;
+        const firstDayOfMonth = new Date(year, month, 1);
+        let startWeekday = firstDayOfMonth.getDay();
+        let startOffset = (startWeekday === 0 ? 6 : startWeekday - 1);
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const currentViewStr = getCurrentViewDateStr();
+
+        let calendarHtml = '';
+        const weekdays = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+        weekdays.forEach(d => { calendarHtml += `<div class="weekday">${d}</div>`; });
+
+        for (let i = 0; i < startOffset; i++) {
+            calendarHtml += `<div class="cal-day empty" style="background:#f4f8fc;"></div>`;
+        }
+
+        for (let d = 1; d <= daysInMonth; d++) {
+            const dateObj = new Date(year, month, d);
+            const dateStr = formatLocalDate(dateObj);
+            const activeHabits = getActiveHabitsForDate(dateStr);
+            const completionsCount = activeHabits.filter(h => isHabitCompletedOnDate(h, dateStr)).length;
+            const total = activeHabits.length;
+            
+            let badgeClass = '', badgeText = '';
+            if (total > 0) {
+                const ratio = completionsCount / total;
+                if (ratio === 1) { badgeClass = 'badge-high'; badgeText = '✓ Todo'; }
+                else if (ratio >= 0.5) { badgeClass = 'badge-medium'; badgeText = `${completionsCount}/${total}`; }
+                else { badgeClass = 'badge-low'; badgeText = `${completionsCount}/${total}`; }
+            } else {
+                badgeClass = 'badge-inactive';
+                badgeText = '—';
+            }
+            
+            const isSelected = (dateStr === currentViewStr);
+            const isInactive = total === 0;
+            calendarHtml += `
+                <div class="cal-day ${isSelected ? 'selected-day' : ''} ${isInactive ? 'inactive-day' : ''}" data-date="${dateStr}">
+                    ${d}
+                    <span class="completion-badge ${badgeClass}">${badgeText}</span>
+                </div>
+            `;
+        }
+        calendarGrid.innerHTML = calendarHtml;
+        monthYearDisplay.innerText = firstDayOfMonth.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+
+        document.querySelectorAll('.cal-day[data-date]').forEach(el => {
+            el.addEventListener('click', (e) => {
+                const newDateStr = el.getAttribute('data-date');
+                if (newDateStr) {
+                    currentViewDate = parseLocalDate(newDateStr);
+                    renderTodayTab();
+                    document.querySelector('.tab-btn[data-tab="today"]').click();
+                    renderCalendar();
+                }
+            });
+        });
+    }
+
+    // Gráfica
+    function updateChart() {
+        const dateStr = getCurrentViewDateStr();
+        const percent = getCompletionPercentageForDate(dateStr);
+        const ctx = document.getElementById('progressChart').getContext('2d');
+        if (progressChart) progressChart.destroy();
+        progressChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Completado', 'Pendiente'],
+                datasets: [{
+                    data: [percent, 100 - percent],
+                    backgroundColor: ['#3ba87e', '#e2e8f0'],
+                    borderWidth: 0,
+                    cutout: '65%'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    tooltip: { callbacks: { label: (ctx) => `${ctx.raw.toFixed(0)}%` } }
+                }
+            }
+        });
+    }
+
+    // Selector de días
+    function updateDaySelection() {
+        dayBtns.forEach(btn => {
+            const day = parseInt(btn.dataset.day);
+            if (selectedDays.includes(day)) {
+                btn.classList.add('selected');
+            } else {
+                btn.classList.remove('selected');
+            }
+        });
+    }
+
+    function toggleDay(day) {
+        const index = selectedDays.indexOf(day);
+        if (index > -1) {
+            selectedDays.splice(index, 1);
+        } else {
+            selectedDays.push(day);
+            selectedDays.sort((a, b) => a - b);
+        }
+        updateDaySelection();
+    }
+
+    // Funciones de navegación
+    function changeMonth(delta) {
+        let newMonth = currentCalendarMonth + delta;
+        let newYear = currentCalendarYear;
+        if (newMonth < 0) { newMonth = 11; newYear--; }
+        else if (newMonth > 11) { newMonth = 0; newYear++; }
+        currentCalendarYear = newYear;
+        currentCalendarMonth = newMonth;
+        renderCalendar();
+    }
+
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab'));
+        document.getElementById(tabId + 'Tab').classList.add('active-tab');
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelector(`.tab-btn[data-tab="${tabId}"]`).classList.add('active');
+        if (tabId === 'calendar') renderCalendar();
+        else if (tabId === 'today') renderTodayTab();
+    }
+
+    function escapeHtml(str) {
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    // Inicializar
+    function init() {
+        loadData();
+        currentViewDate = new Date();
+        renderTodayTab();
+        renderCalendar();
+        updateChart();
+
+        // Crear/Actualizar hábito
+        createBtn.addEventListener('click', () => {
+            const name = newHabitInput.value;
+            const editId = createBtn.dataset.editId;
+            
+            if (selectedDays.length === 0) {
+                alert('Selecciona al menos un día de la semana para este hábito.');
+                return;
+            }
+
+            if (editId) {
+                // Modo edición
+                const habit = habits.find(h => h.id == editId);
+                if (habit) {
+                    habit.name = name;
+                    habit.days = [...selectedDays];
+                    saveToLocalStorage();
+                    renderTodayTab();
+                    renderCalendar();
+                    updateChart();
+                    createBtn.textContent = '+ Crear';
+                    delete createBtn.dataset.editId;
+                    newHabitInput.value = '';
+                }
+            } else {
+                // Nuevo hábito
+                if (addNewHabit(name, [...selectedDays])) {
+                    newHabitInput.value = '';
+                } else {
+                    alert('Escribe un nombre válido');
+                }
+            }
+        });
+
+        newHabitInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') createBtn.click();
+        });
+
+        // Selector de días
+        dayBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const day = parseInt(btn.dataset.day);
+                toggleDay(day);
+            });
+        });
+
+        selectAllBtn.addEventListener('click', () => {
+            selectedDays = [0, 1, 2, 3, 4, 5, 6];
+            updateDaySelection();
+        });
+
+        clearAllBtn.addEventListener('click', () => {
+            selectedDays = [];
+            updateDaySelection();
+        });
+
+        // Modal
+        modalConfirm.addEventListener('click', () => {
+            if (pendingDeleteId) {
+                deleteHabitById(pendingDeleteId);
+                modalOverlay.classList.remove('active');
+            }
+        });
+
+        modalCancel.addEventListener('click', () => {
+            modalOverlay.classList.remove('active');
+            pendingDeleteId = null;
+        });
+
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) {
+                modalOverlay.classList.remove('active');
+                pendingDeleteId = null;
+            }
+        });
+
+        // Tabs
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+        });
+
+        prevMonthBtn.addEventListener('click', () => changeMonth(-1));
+        nextMonthBtn.addEventListener('click', () => changeMonth(1));
+    }
+
+    init();
+</script>
+</body>
+</html>
