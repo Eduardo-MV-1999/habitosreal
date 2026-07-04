@@ -4,12 +4,14 @@
   ============================================
   <!DOCTYPE html>: Le dice al navegador que este es un documento HTML5.
   Esto asegura que el navegador interprete el código correctamente.
+  Sin esto, el navegador podría usar un modo de compatibilidad antiguo.
 -->
 <!DOCTYPE html>
 <html lang="es">
 <!-- 
   <html lang="es">: Indica que el contenido está en español.
   Esto ayuda a los navegadores y motores de búsqueda a entender el idioma.
+  También influye en la pronunciación de lectores de pantalla.
 -->
 
 <!-- 
@@ -18,34 +20,39 @@
   ============================================
   Contiene metadatos, título, estilos y librerías externas.
   No es visible en la página, pero es esencial para su funcionamiento.
+  Todo lo que está aquí se carga antes que el contenido visible.
 -->
 <head>
     <!-- 
       <meta charset="UTF-8">: Define la codificación de caracteres.
-      Permite usar letras con acentos, eñes y caracteres especiales.
-      Sin esto, los textos se verían con caracteres extraños.
+      UTF-8 permite usar letras con acentos, eñes y caracteres especiales.
+      Ejemplo: "ñ", "á", "é", "í", "ó", "ú" se mostrarán correctamente.
+      Sin esto, los textos se verían con caracteres extraños como "Ã±".
     -->
     <meta charset="UTF-8">
     
     <!-- 
       <meta name="viewport">: Hace que la página sea responsiva en móviles.
       - width=device-width: Ajusta el ancho al tamaño de la pantalla.
-      - initial-scale=1.0: Escala inicial sin zoom.
+      - initial-scale=1.0: Escala inicial sin zoom (1:1).
       - user-scalable=yes: Permite que el usuario haga zoom (accesibilidad).
+      Esto es CRUCIAL para que la app se vea bien en celulares.
     -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     
     <!-- 
       <title>: Título que aparece en la pestaña del navegador.
-      Es importante para SEO y para que el usuario identifique la página.
+      Es importante para SEO (posicionamiento en buscadores).
+      También ayuda al usuario a identificar la página en sus pestañas abiertas.
     -->
     <title>Mis Hábitos Diarios</title>
     
     <!-- 
       <script src="...">: Carga la librería Chart.js desde un CDN.
       CDN = Content Delivery Network (red de servidores).
-      Chart.js permite crear gráficos fácilmente.
+      Chart.js permite crear gráficos de forma sencilla.
       No necesitas instalar nada, se carga desde internet.
+      La versión 4.4.0 es estable y tiene todas las funciones que necesitamos.
     -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     
@@ -56,6 +63,7 @@
       Aquí se define cómo se ve la aplicación:
       colores, tamaños, bordes, animaciones, etc.
       Todo el diseño visual está aquí.
+      CSS funciona como "maquillaje" de la página.
     -->
     <style>
         /* 
@@ -64,10 +72,11 @@
           ==========================================
           Aplica estos estilos a TODOS los elementos HTML.
           Es útil para resetear márgenes y paddings por defecto.
+          Esto asegura que todos los elementos partan de la misma base.
         */
         * {
-            box-sizing: border-box;  /* El padding y borde no aumentan el tamaño */
-            margin: 0;               /* Elimina márgenes por defecto */
+            box-sizing: border-box;  /* El padding y borde no aumentan el tamaño total */
+            margin: 0;               /* Elimina márgenes por defecto que los navegadores ponen */
             padding: 0;              /* Elimina paddings por defecto */
         }
 
@@ -77,26 +86,31 @@
           ==========================================
           El body es el contenedor principal de toda la página.
           Aquí definimos el fondo, tipografía, etc.
+          Todo el contenido visible está dentro del body.
         */
         body {
             /* 
               background: Gradiente lineal de colores suaves.
               Va de un gris azulado a un gris más oscuro.
               Esto da un fondo moderno y agradable a la vista.
+              El gradiente es una transición suave entre dos colores.
             */
             background: linear-gradient(135deg, #eef2f7 0%, #d9e2ec 100%);
             
             /* 
-              font-family: Define la tipografía.
-              'Segoe UI' es la primera opción, luego Roboto, etc.
-              Si ninguna está disponible, usa sans-serif (la del sistema).
+              font-family: Define la tipografía (tipo de letra).
+              'Segoe UI' es la primera opción (Windows 10/11).
+              Roboto es la segunda (Android/Chrome).
+              system-ui es la tipografía predeterminada del sistema.
+              sans-serif es el respaldo final (sin adornos).
+              El navegador usa la primera que encuentre disponible.
             */
             font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
             
-            /* padding: Espacio alrededor del contenido (1rem = 16px) */
+            /* padding: Espacio alrededor del contenido (1rem = 16px por defecto) */
             padding: 1rem;
             
-            /* min-height: Altura mínima de la pantalla completa */
+            /* min-height: Altura mínima de la pantalla completa (100% de la altura visible) */
             min-height: 100vh;
         }
 
@@ -106,27 +120,30 @@
           ==========================================
           Es la "tarjeta" blanca que contiene toda la app.
           Tiene bordes redondeados, sombra y fondo semi-transparente.
+          Es como una "ventana" flotante sobre el fondo.
         */
         .app {
-            max-width: 1200px;        /* Ancho máximo (no crece más) */
-            margin: 0 auto;           /* Centra horizontalmente */
+            max-width: 1200px;        /* Ancho máximo (no crece más de 1200px) */
+            margin: 0 auto;           /* Centra horizontalmente (auto = izquierda y derecha) */
             
             /* 
               background: Fondo blanco semi-transparente.
               rgba(255,255,255,0.9) = blanco con 90% de opacidad.
+              El 10% restante deja ver el fondo a través.
             */
             background: rgba(255, 255, 255, 0.9);
             
             /* 
               backdrop-filter: Efecto de desenfoque detrás de la tarjeta.
               Crea un efecto "vidrio esmerilado" muy moderno.
+              Solo funciona en navegadores modernos.
             */
             backdrop-filter: blur(4px);
             
-            border-radius: 2rem;      /* Esquinas muy redondeadas */
-            box-shadow: 0 25px 40px -12px rgba(0,0,0,0.25); /* Sombra */
-            overflow: hidden;         /* Recorta lo que sobresale */
-            padding: 1.5rem;          /* Espacio interno */
+            border-radius: 2rem;      /* Esquinas muy redondeadas (2rem = ~32px) */
+            box-shadow: 0 25px 40px -12px rgba(0,0,0,0.25); /* Sombra que da profundidad */
+            overflow: hidden;         /* Recorta lo que sobresale de la tarjeta */
+            padding: 1.5rem;          /* Espacio interno de la tarjeta */
         }
 
         /* 
@@ -134,26 +151,28 @@
           PESTAÑAS DE NAVEGACIÓN (.tabs)
           ==========================================
           Contiene los botones para cambiar entre "Hoy" y "Calendario".
+          Es la barra de navegación principal de la app.
         */
         .tabs {
-            display: flex;            /* Alinea elementos en fila */
-            gap: 0.5rem;             /* Espacio entre elementos */
-            margin-bottom: 1.8rem;    /* Espacio hacia abajo */
-            border-bottom: 2px solid #cbdde9; /* Línea separadora */
-            padding-bottom: 0.5rem;   /* Espacio interno abajo */
-            flex-wrap: wrap;          /* Permite que se envuelvan en móvil */
-            justify-content: space-between; /* Separa grupos */
-            align-items: center;      /* Centra verticalmente */
+            display: flex;            /* Alinea elementos en fila (horizontal) */
+            gap: 0.5rem;             /* Espacio entre elementos (8px) */
+            margin-bottom: 1.8rem;    /* Espacio hacia abajo (separación del contenido) */
+            border-bottom: 2px solid #cbdde9; /* Línea separadora debajo de las pestañas */
+            padding-bottom: 0.5rem;   /* Espacio interno abajo (antes de la línea) */
+            flex-wrap: wrap;          /* Permite que se envuelvan en móvil (van a segunda línea) */
+            justify-content: space-between; /* Separa los grupos (pestañas a izquierda, botón a derecha) */
+            align-items: center;      /* Centra verticalmente los elementos */
         }
 
         /* 
           Grupo de botones de pestañas
-          Agrupa "Hoy" y "Calendario" para alinearlos a la izquierda
+          Agrupa "Hoy" y "Calendario" para alinearlos a la izquierda.
+          Es un contenedor interno dentro de .tabs.
         */
         .tab-group {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
+            display: flex;            /* Alinea en fila */
+            gap: 0.5rem;             /* Espacio entre botones */
+            flex-wrap: wrap;          /* Permite envolver en móvil */
         }
 
         /* 
@@ -161,16 +180,17 @@
           BOTÓN DE PESTAÑA (.tab-btn)
           ==========================================
           Cada botón (Hoy/Día y Calendario)
+          Es el elemento que el usuario toca para cambiar de vista.
         */
         .tab-btn {
-            background: transparent;  /* Sin fondo */
+            background: transparent;  /* Sin fondo (transparente) */
             border: none;             /* Sin borde */
-            font-size: 1.2rem;        /* Tamaño de texto */
-            font-weight: 600;         /* Negrita */
-            padding: 0.6rem 1.4rem;   /* Espacio interno */
-            border-radius: 2rem;      /* Esquinas redondeadas */
-            cursor: pointer;          /* Cambia a mano al pasar */
-            transition: 0.2s;         /* Animación suave */
+            font-size: 1.2rem;        /* Tamaño de texto (1.2rem = ~19px) */
+            font-weight: 600;         /* Negrita (600 es semi-bold) */
+            padding: 0.6rem 1.4rem;   /* Espacio interno: vertical 0.6rem, horizontal 1.4rem */
+            border-radius: 2rem;      /* Esquinas redondeadas (tipo píldora) */
+            cursor: pointer;          /* Cambia a mano al pasar (indica que es clickeable) */
+            transition: 0.2s;         /* Animación suave de 0.2 segundos al cambiar de estado */
             color: #4a627a;           /* Color del texto (gris azulado) */
         }
 
@@ -179,11 +199,12 @@
           PESTAÑA ACTIVA (.tab-btn.active)
           ==========================================
           La pestaña que está seleccionada actualmente.
+          Se distingue visualmente para que el usuario sepa dónde está.
         */
         .tab-btn.active {
             background: #2b6a8f;      /* Fondo azul oscuro */
-            color: white;             /* Texto blanco */
-            box-shadow: 0 2px 8px rgba(43,106,143,0.3); /* Sombra */
+            color: white;             /* Texto blanco para contraste */
+            box-shadow: 0 2px 8px rgba(43,106,143,0.3); /* Sombra azul suave */
         }
 
         /* 
@@ -191,26 +212,27 @@
           BOTÓN RESTABLECER (.reset-btn)
           ==========================================
           Botón rojo que permite cargar los hábitos predefinidos.
+          Útil si el usuario quiere volver a la configuración inicial.
         */
         .reset-btn {
-            background: #e15a46;      /* Rojo */
-            color: white;
-            border: none;
-            padding: 0.4rem 1.2rem;
-            border-radius: 2rem;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 0.8rem;
-            transition: 0.2s;
+            background: #e15a46;      /* Rojo anaranjado */
+            color: white;             /* Texto blanco */
+            border: none;             /* Sin borde */
+            padding: 0.4rem 1.2rem;   /* Espacio interno */
+            border-radius: 2rem;      /* Esquinas redondeadas */
+            font-weight: 600;         /* Negrita */
+            cursor: pointer;          /* Mano al pasar */
+            font-size: 0.8rem;        /* Tamaño de texto más pequeño */
+            transition: 0.2s;         /* Animación suave */
         }
 
         /* 
           Efecto hover: cuando el mouse pasa por encima.
-          Cambia el color y se achica un poco.
+          Cambia el color y se achica un poco (efecto de presión).
         */
         .reset-btn:hover {
-            background: #c94a36;
-            transform: scale(0.97);
+            background: #c94a36;      /* Rojo más oscuro */
+            transform: scale(0.97);   /* Se achica un 3% (efecto de clic) */
         }
 
         /* 
@@ -219,18 +241,19 @@
           ==========================================
           El contenido dentro de cada pestaña.
           display: none → oculto por defecto.
+          Solo se muestra cuando la pestaña está activa.
         */
         .tab-content {
-            display: none;
-            animation: fade 0.2s ease; /* Animación de entrada */
+            display: none;            /* Oculto por defecto */
+            animation: fade 0.2s ease; /* Animación de entrada (fade) cuando aparece */
         }
 
         /* 
           Contenido activo: se muestra.
-          display: block → visible.
+          display: block → visible (ocupa todo el ancho).
         */
         .tab-content.active-tab {
-            display: block;
+            display: block;           /* Visible */
         }
 
         /* 
@@ -238,15 +261,16 @@
           ANIMACIÓN FADE
           ==========================================
           Cuando aparece una pestaña, hace un efecto de desvanecimiento.
+          Es más suave que un cambio brusco.
         */
         @keyframes fade {
             from { 
-                opacity: 0;           /* Empieza invisible */
-                transform: translateY(5px); /* Y ligeramente abajo */
+                opacity: 0;           /* Empieza invisible (0% opacidad) */
+                transform: translateY(5px); /* Y ligeramente abajo (5px) */
             }
             to { 
-                opacity: 1;           /* Termina visible */
-                transform: translateY(0); /* Y en su posición */
+                opacity: 1;           /* Termina visible (100% opacidad) */
+                transform: translateY(0); /* Y en su posición normal */
             }
         }
 
@@ -254,55 +278,60 @@
           ==========================================
           PANEL DE RESUMEN DIARIO (.summary-panel)
           ==========================================
-          Muestra estadísticas diarias en la parte superior.
+          Muestra estadísticas diarias en la parte inferior.
           Tiene 4 items: completados, pendientes, porcentaje y racha.
+          Está al final para no ocupar espacio al abrir la app.
+          Es una tarjeta de color azul oscuro con texto blanco.
         */
         .summary-panel {
-            background: linear-gradient(135deg, #2b6a8f, #1f5575);
-            color: white;
-            border-radius: 1.5rem;
-            padding: 1rem 1.5rem;
-            margin-bottom: 1.2rem;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 1rem;
-            box-shadow: 0 4px 12px rgba(43,106,143,0.3);
+            background: linear-gradient(135deg, #2b6a8f, #1f5575); /* Gradiente azul */
+            color: white;             /* Texto blanco para contraste */
+            border-radius: 1.5rem;    /* Esquinas redondeadas */
+            padding: 1rem 1.5rem;     /* Espacio interno */
+            margin-top: 1.5rem;       /* Espacio arriba (separación de la lista) */
+            margin-bottom: 0.5rem;    /* Espacio abajo */
+            display: grid;            /* Usa CSS Grid para organizar los items */
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Columnas flexibles */
+            gap: 1rem;               /* Espacio entre items */
+            box-shadow: 0 4px 12px rgba(43,106,143,0.3); /* Sombra azul */
         }
 
         /* 
           Cada item del resumen (completados, pendientes, etc.)
-          text-align: center → centra el texto.
+          text-align: center → centra el texto horizontalmente.
         */
         .summary-item {
-            text-align: center;
+            text-align: center;       /* Texto centrado */
         }
 
         /* 
           Número grande del resumen.
           font-size: 1.8rem → tamaño grande y llamativo.
-          display: block → ocupa toda la línea.
+          display: block → ocupa toda la línea (como un "enter").
+          font-weight: 700 → negrita muy gruesa.
         */
         .summary-item .number {
-            font-size: 1.8rem;
-            font-weight: 700;
-            display: block;
+            font-size: 1.8rem;        /* Tamaño grande */
+            font-weight: 700;         /* Negrita gruesa */
+            display: block;           /* Ocupa toda la línea */
         }
 
         /* 
           Etiqueta pequeña debajo del número.
-          uppercase → convierte a mayúsculas.
-          letter-spacing → separa las letras.
+          uppercase → convierte todo a mayúsculas.
+          letter-spacing → separa las letras (más legible en mayúsculas).
+          opacity: 0.9 → ligeramente transparente.
         */
         .summary-item .label {
-            font-size: 0.7rem;
-            opacity: 0.9;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-size: 0.7rem;        /* Tamaño pequeño */
+            opacity: 0.9;             /* Casi opaco */
+            text-transform: uppercase; /* Mayúsculas */
+            letter-spacing: 0.5px;    /* Separación entre letras */
         }
 
         /* Icono de fuego para la racha */
         .summary-item .streak-fire {
-            font-size: 1.5rem;
+            font-size: 1.5rem;        /* Tamaño grande para el emoji */
         }
 
         /* 
@@ -310,28 +339,30 @@
           ENCABEZADO DEL DÍA (.day-header)
           ==========================================
           Muestra la fecha y las estadísticas rápidas.
+          Es una barra blanca semi-transparente en la parte superior.
         */
         .day-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            flex-wrap: wrap;
-            margin-bottom: 1.2rem;
-            background: #ffffffcc;
-            padding: 0.5rem 1rem;
-            border-radius: 2rem;
+            display: flex;            /* Alinea en fila */
+            justify-content: space-between; /* Separa fecha y estadísticas */
+            align-items: baseline;    /* Alinea por la línea base del texto */
+            flex-wrap: wrap;          /* Permite envolver en móvil */
+            margin-bottom: 1.2rem;    /* Espacio hacia abajo */
+            background: #ffffffcc;    /* Blanco con 80% de opacidad (cc = 204/255) */
+            padding: 0.5rem 1rem;     /* Espacio interno */
+            border-radius: 2rem;      /* Esquinas redondeadas */
         }
 
         /* 
           Fecha seleccionada.
           Tiene fondo azul claro y texto azul oscuro.
+          Es como una "etiqueta" que resalta la fecha.
         */
         .selected-date {
-            font-weight: 700;
-            background: #eef3fc;
-            padding: 0.3rem 1rem;
-            border-radius: 2rem;
-            color: #1f5e7e;
+            font-weight: 700;         /* Negrita */
+            background: #eef3fc;      /* Fondo azul muy claro */
+            padding: 0.3rem 1rem;     /* Espacio interno */
+            border-radius: 2rem;      /* Esquinas redondeadas */
+            color: #1f5e7e;           /* Texto azul oscuro */
         }
 
         /* 
@@ -339,10 +370,10 @@
           Fondo gris claro y texto gris.
         */
         .stats-small {
-            font-size: 0.9rem;
-            background: #e2eaf1;
-            padding: 0.2rem 1rem;
-            border-radius: 2rem;
+            font-size: 0.9rem;        /* Tamaño de texto */
+            background: #e2eaf1;      /* Fondo gris claro */
+            padding: 0.2rem 1rem;     /* Espacio interno */
+            border-radius: 2rem;      /* Esquinas redondeadas */
         }
 
         /* 
@@ -350,26 +381,27 @@
           ÁREA PARA AGREGAR HÁBITOS (.add-habit-area)
           ==========================================
           Contiene el input, el botón y el selector de días.
+          Es la zona donde el usuario crea nuevos hábitos.
         */
         .add-habit-area {
-            display: flex;
-            flex-direction: column;
-            gap: 0.7rem;
-            margin: 1rem 0 1.5rem 0;
-            background: #f8fafc;
-            padding: 1rem;
-            border-radius: 1.5rem;
-            border: 1px solid #deecf5;
+            display: flex;            /* Flexbox para organizar */
+            flex-direction: column;   /* Elementos en columna (vertical) */
+            gap: 0.7rem;             /* Espacio entre elementos */
+            margin: 1rem 0 1.5rem 0;  /* Márgenes: arriba 1rem, abajo 1.5rem */
+            background: #f8fafc;      /* Fondo gris muy claro */
+            padding: 1rem;            /* Espacio interno */
+            border-radius: 1.5rem;    /* Esquinas redondeadas */
+            border: 1px solid #deecf5; /* Borde gris claro */
         }
 
         /* 
           Fila superior: input + botón.
-          flex-wrap: wrap → en móvil se apilan.
+          flex-wrap: wrap → en móvil se apilan (input arriba, botón abajo).
         */
         .add-habit-row {
-            display: flex;
-            gap: 0.7rem;
-            flex-wrap: wrap;
+            display: flex;            /* Alinea en fila */
+            gap: 0.7rem;             /* Espacio entre input y botón */
+            flex-wrap: wrap;          /* Permite apilar en móvil */
         }
 
         /* 
@@ -378,35 +410,35 @@
           border-radius: 3rem → bordes muy redondeados (tipo píldora).
         */
         .add-habit-row input {
-            flex: 2;
-            padding: 0.8rem 1.2rem;
-            border: 2px solid #cde0ed;
-            border-radius: 3rem;
-            font-size: 0.95rem;
-            background: white;
-            min-width: 150px;
+            flex: 2;                 /* Ocupa el doble de espacio */
+            padding: 0.8rem 1.2rem;   /* Espacio interno */
+            border: 2px solid #cde0ed; /* Borde gris azulado */
+            border-radius: 3rem;      /* Bordes muy redondeados */
+            font-size: 0.95rem;       /* Tamaño de texto */
+            background: white;        /* Fondo blanco */
+            min-width: 150px;         /* Ancho mínimo en móvil */
         }
 
         /* 
           Botón de crear/actualizar.
           background: azul oscuro.
-          padding: 0 1.6rem → horizontal sin límite.
+          padding: 0 1.6rem → horizontal sin límite, vertical con padding.
         */
         .add-habit-row button {
-            background: #2b6a8f;
-            border: none;
-            color: white;
-            padding: 0 1.6rem;
-            border-radius: 3rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.2s;
+            background: #2b6a8f;      /* Azul oscuro */
+            border: none;             /* Sin borde */
+            color: white;             /* Texto blanco */
+            padding: 0 1.6rem;        /* Padding horizontal */
+            border-radius: 3rem;      /* Bordes redondeados */
+            font-weight: bold;        /* Negrita */
+            cursor: pointer;          /* Mano al pasar */
+            transition: 0.2s;         /* Animación suave */
         }
 
         /* Efecto hover del botón crear */
         .add-habit-row button:hover {
-            background: #1f5575;
-            transform: scale(0.97);
+            background: #1f5575;      /* Azul más oscuro */
+            transform: scale(0.97);   /* Se achica un poco */
         }
 
         /* 
@@ -417,18 +449,18 @@
           flex-wrap: wrap → se envuelven en móvil.
         */
         .days-selector {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            align-items: center;
+            display: flex;            /* Alinea en fila */
+            gap: 0.5rem;             /* Espacio entre botones */
+            flex-wrap: wrap;          /* Permite envolver */
+            align-items: center;      /* Centra verticalmente */
         }
 
         /* Etiqueta del selector */
         .days-selector label {
-            font-weight: 600;
-            color: #4a627a;
-            font-size: 0.9rem;
-            margin-right: 0.3rem;
+            font-weight: 600;         /* Negrita */
+            color: #4a627a;           /* Color gris azulado */
+            font-size: 0.9rem;        /* Tamaño de texto */
+            margin-right: 0.3rem;     /* Espacio a la derecha */
         }
 
         /* 
@@ -436,31 +468,32 @@
           min-width: 40px → ancho mínimo para móviles.
         */
         .day-btn {
-            background: white;
-            border: 2px solid #cde0ed;
-            border-radius: 2rem;
-            padding: 0.3rem 0.8rem;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.8rem;
-            color: #4a627a;
-            transition: 0.2s;
-            min-width: 40px;
+            background: white;        /* Fondo blanco */
+            border: 2px solid #cde0ed; /* Borde gris azulado */
+            border-radius: 2rem;      /* Esquinas redondeadas */
+            padding: 0.3rem 0.8rem;   /* Espacio interno */
+            cursor: pointer;          /* Mano al pasar */
+            font-weight: 600;         /* Negrita */
+            font-size: 0.8rem;        /* Tamaño de texto */
+            color: #4a627a;           /* Color gris azulado */
+            transition: 0.2s;         /* Animación suave */
+            min-width: 40px;          /* Ancho mínimo */
         }
 
         /* Efecto hover: fondo gris claro */
         .day-btn:hover {
-            background: #e6f0f9;
+            background: #e6f0f9;      /* Fondo gris azulado claro */
         }
 
         /* 
           Día seleccionado.
           Fondo azul, texto blanco, borde azul.
+          Indica qué días están activos para el hábito.
         */
         .day-btn.selected {
-            background: #2b6a8f;
-            color: white;
-            border-color: #2b6a8f;
+            background: #2b6a8f;      /* Azul oscuro */
+            color: white;             /* Texto blanco */
+            border-color: #2b6a8f;    /* Borde azul */
         }
 
         /* 
@@ -469,116 +502,124 @@
           ==========================================
           Contiene todas las tarjetas de hábitos.
           flex-direction: column → apiladas verticalmente.
+          Es donde se muestran los hábitos del día.
         */
         .habits-list {
-            list-style: none;         /* Sin viñetas */
-            display: flex;
-            flex-direction: column;
-            gap: 0.7rem;
-            margin-top: 1rem;
+            list-style: none;         /* Sin viñetas (puntos) */
+            display: flex;            /* Flexbox */
+            flex-direction: column;   /* Vertical */
+            gap: 0.7rem;             /* Espacio entre tarjetas */
+            margin-top: 1rem;         /* Espacio arriba */
         }
 
         /* 
           TARJETA DE CADA HÁBITO (.habit-card)
           ==========================================
           Cada hábito se muestra en una tarjeta blanca.
+          Es un elemento interactivo que el usuario puede marcar.
         */
         .habit-card {
-            background: white;
-            border-radius: 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0.6rem 1rem;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-            border: 1px solid #deecf5;
-            transition: 0.2s;
+            background: white;        /* Fondo blanco */
+            border-radius: 2rem;      /* Esquinas redondeadas */
+            display: flex;            /* Flexbox */
+            align-items: center;      /* Centra verticalmente */
+            justify-content: space-between; /* Separa izquierda y derecha */
+            padding: 0.6rem 1rem;     /* Espacio interno */
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05); /* Sombra suave */
+            border: 1px solid #deecf5; /* Borde gris claro */
+            transition: 0.2s;         /* Animación suave */
         }
 
         /* Efecto hover: sombra más pronunciada */
         .habit-card:hover {
-            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08); /* Sombra más grande */
         }
 
         /* 
           Información del hábito (checkbox + nombre + días)
           flex: 1 → ocupa todo el espacio disponible.
+          flex-wrap: wrap → permite envolver en móvil.
         */
         .habit-info {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            flex: 1;
-            flex-wrap: wrap;
+            display: flex;            /* Flexbox */
+            align-items: center;      /* Centra verticalmente */
+            gap: 1rem;              /* Espacio entre elementos */
+            flex: 1;                 /* Ocupa todo el espacio */
+            flex-wrap: wrap;          /* Permite envolver */
         }
 
         /* 
           Checkbox personalizado.
-          accent-color → color del checkbox.
+          accent-color → color del checkbox (verde).
           cursor: pointer → mano al pasar.
+          width/height: 26px → tamaño grande para móviles.
         */
         .habit-check {
-            width: 26px;
-            height: 26px;
-            cursor: pointer;
-            accent-color: #3b8c6e;
+            width: 26px;              /* Ancho */
+            height: 26px;             /* Alto */
+            cursor: pointer;          /* Mano al pasar */
+            accent-color: #3b8c6e;    /* Color verde */
         }
 
         /* Nombre del hábito */
         .habit-name {
-            font-size: 1rem;
-            font-weight: 500;
+            font-size: 1rem;          /* Tamaño de texto */
+            font-weight: 500;         /* Negrita media */
         }
 
         /* 
           Días de repetición.
           Aparece como una etiqueta gris con texto azul grisáceo.
+          Muestra en qué días se repite el hábito (ej: "Lun, Mar, Vie").
         */
         .habit-days {
-            font-size: 0.7rem;
-            color: #7a93ab;
-            background: #eef2f7;
-            padding: 0.2rem 0.6rem;
-            border-radius: 1rem;
-            display: inline-block;
+            font-size: 0.7rem;        /* Tamaño pequeño */
+            color: #7a93ab;           /* Color gris azulado */
+            background: #eef2f7;      /* Fondo gris claro */
+            padding: 0.2rem 0.6rem;   /* Espacio interno */
+            border-radius: 1rem;      /* Esquinas redondeadas */
+            display: inline-block;    /* Solo ocupa su espacio */
         }
 
         /* 
           ==========================================
-          BADGE DE RACHA (.habit-streak) - NUEVO
+          BADGE DE RACHA (.habit-streak)
           ==========================================
           Muestra 🔥 Xd al lado del hábito.
           background: amarillo claro → naranja.
           color: marrón oscuro.
+          Indica cuántos días seguidos has completado este hábito.
         */
         .habit-streak {
-            font-size: 0.7rem;
-            background: #fff3cd;
-            color: #856404;
-            padding: 0.2rem 0.6rem;
-            border-radius: 1rem;
-            display: inline-block;
-            font-weight: 600;
-            margin-left: 0.3rem;
+            font-size: 0.7rem;        /* Tamaño pequeño */
+            background: #fff3cd;      /* Fondo amarillo claro */
+            color: #856404;           /* Texto marrón oscuro */
+            padding: 0.2rem 0.6rem;   /* Espacio interno */
+            border-radius: 1rem;      /* Esquinas redondeadas */
+            display: inline-block;    /* Solo ocupa su espacio */
+            font-weight: 600;         /* Negrita */
+            margin-left: 0.3rem;      /* Espacio a la izquierda */
         }
 
         /* 
           Racha alta (5+ días): se pone verde.
           background: verde claro.
           color: verde oscuro.
+          Es un refuerzo positivo para motivar al usuario.
         */
         .habit-streak.high {
-            background: #d4edda;
-            color: #155724;
+            background: #d4edda;      /* Verde claro */
+            color: #155724;           /* Verde oscuro */
         }
 
         /* 
           Contenedor de acciones (editar + eliminar)
           Se alinea a la derecha.
+          Contiene los botones ✎ y ✕
         */
         .habit-actions {
-            display: flex;
-            gap: 0.3rem;
+            display: flex;            /* Flexbox */
+            gap: 0.3rem;             /* Espacio entre botones */
         }
 
         /* 
@@ -587,18 +628,18 @@
           hover: se pone rojo.
         */
         .delete-habit {
-            background: none;
-            border: none;
-            font-size: 1.4rem;
-            cursor: pointer;
-            color: #bdd4e4;
-            padding: 0 0.4rem;
-            transition: 0.2s;
+            background: none;         /* Sin fondo */
+            border: none;             /* Sin borde */
+            font-size: 1.4rem;        /* Tamaño del ícono */
+            cursor: pointer;          /* Mano al pasar */
+            color: #bdd4e4;           /* Color gris claro */
+            padding: 0 0.4rem;        /* Espacio interno */
+            transition: 0.2s;         /* Animación suave */
         }
 
         .delete-habit:hover {
-            color: #e15a46;
-            transform: scale(1.1);
+            color: #e15a46;           /* Rojo */
+            transform: scale(1.1);    /* Se agranda un 10% */
         }
 
         /* 
@@ -607,18 +648,18 @@
           hover: se pone azul.
         */
         .edit-habit {
-            background: none;
-            border: none;
-            font-size: 1.2rem;
-            cursor: pointer;
-            color: #bdd4e4;
-            padding: 0 0.4rem;
-            transition: 0.2s;
+            background: none;         /* Sin fondo */
+            border: none;             /* Sin borde */
+            font-size: 1.2rem;        /* Tamaño del ícono */
+            cursor: pointer;          /* Mano al pasar */
+            color: #bdd4e4;           /* Color gris claro */
+            padding: 0 0.4rem;        /* Espacio interno */
+            transition: 0.2s;         /* Animación suave */
         }
 
         .edit-habit:hover {
-            color: #2b6a8f;
-            transform: scale(1.1);
+            color: #2b6a8f;           /* Azul */
+            transform: scale(1.1);    /* Se agranda un 10% */
         }
 
         /* 
@@ -626,23 +667,24 @@
           CONTENEDOR DE LA GRÁFICA (.chart-container)
           ==========================================
           Fondo blanco, bordes redondeados y sombra suave.
+          Contiene la gráfica de dona de Chart.js.
         */
         .chart-container {
-            background: white;
-            border-radius: 1.5rem;
-            padding: 1rem;
-            margin: 1rem 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            background: white;        /* Fondo blanco */
+            border-radius: 1.5rem;    /* Esquinas redondeadas */
+            padding: 1rem;            /* Espacio interno */
+            margin: 1rem 0;          /* Márgenes arriba y abajo */
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); /* Sombra suave */
         }
 
         /* 
           El canvas de Chart.js.
           max-height: 220px → no crece más de 220px.
-          width: 100% → ocupa todo el ancho.
+          width: 100% → ocupa todo el ancho disponible.
         */
         canvas {
-            max-height: 220px;
-            width: 100%;
+            max-height: 220px;        /* Altura máxima */
+            width: 100%;              /* Ancho completo */
         }
 
         /* 
@@ -650,26 +692,27 @@
           ENCABEZADO DEL CALENDARIO (.calendar-header)
           ==========================================
           Contiene los botones ◀ ▶ y el título del mes.
+          Es la barra de navegación del calendario.
         */
         .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.2rem;
+            display: flex;            /* Flexbox */
+            justify-content: space-between; /* Separa elementos */
+            align-items: center;      /* Centra verticalmente */
+            margin-bottom: 1.2rem;    /* Espacio abajo */
         }
 
         /* Botones de navegación del mes */
         .month-nav {
-            background: #eef2f7;
-            border: none;
-            padding: 0.4rem 1rem;
-            border-radius: 2rem;
-            font-weight: bold;
-            cursor: pointer;
+            background: #eef2f7;      /* Fondo gris claro */
+            border: none;             /* Sin borde */
+            padding: 0.4rem 1rem;     /* Espacio interno */
+            border-radius: 2rem;      /* Esquinas redondeadas */
+            font-weight: bold;        /* Negrita */
+            cursor: pointer;          /* Mano al pasar */
         }
 
         .month-nav:hover {
-            background: #d9e2ec;
+            background: #d9e2ec;      /* Fondo gris más oscuro */
         }
 
         /* 
@@ -678,59 +721,62 @@
           ==========================================
           grid-template-columns: repeat(7, 1fr) → 7 columnas iguales.
           gap: 8px → separación entre celdas.
+          background: blanco semi-transparente.
         */
         .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 8px;
-            background: #ffffffc9;
-            border-radius: 1.2rem;
-            padding: 1rem;
+            display: grid;            /* CSS Grid */
+            grid-template-columns: repeat(7, 1fr); /* 7 columnas iguales */
+            gap: 8px;                /* Espacio entre celdas */
+            background: #ffffffc9;    /* Blanco con 80% opacidad */
+            border-radius: 1.2rem;    /* Esquinas redondeadas */
+            padding: 1rem;            /* Espacio interno */
         }
 
         /* 
           Días de la semana (Lun, Mar, etc.)
           text-align: center → centrado.
           font-weight: bold → negrita.
+          color: azul oscuro.
         */
         .weekday {
-            text-align: center;
-            font-weight: bold;
-            color: #2c6b8f;
-            padding: 0.5rem;
+            text-align: center;       /* Centrado */
+            font-weight: bold;        /* Negrita */
+            color: #2c6b8f;           /* Azul oscuro */
+            padding: 0.5rem;          /* Espacio interno */
         }
 
         /* 
           Cada día del calendario.
           cursor: pointer → se puede hacer clic.
+          Al hacer clic, cambia a la vista de ese día.
         */
         .cal-day {
-            background: white;
-            border-radius: 1rem;
-            padding: 0.8rem 0.3rem;
-            text-align: center;
-            cursor: pointer;
-            transition: 0.1s;
-            border: 1px solid #d4e2ef;
-            font-weight: 500;
+            background: white;        /* Fondo blanco */
+            border-radius: 1rem;      /* Esquinas redondeadas */
+            padding: 0.8rem 0.3rem;   /* Espacio interno */
+            text-align: center;       /* Centrado */
+            cursor: pointer;          /* Mano al pasar */
+            transition: 0.1s;         /* Animación rápida */
+            border: 1px solid #d4e2ef; /* Borde gris claro */
+            font-weight: 500;         /* Negrita media */
         }
 
         .cal-day:hover {
-            background: #e6f0f9;
-            transform: scale(0.97);
+            background: #e6f0f9;      /* Fondo gris azulado */
+            transform: scale(0.97);   /* Se achica un poco */
         }
 
         /* Día seleccionado (resaltado en azul) */
         .cal-day.selected-day {
-            background: #2b6a8f;
-            color: white;
-            border-color: #2b6a8f;
+            background: #2b6a8f;      /* Azul oscuro */
+            color: white;             /* Texto blanco */
+            border-color: #2b6a8f;    /* Borde azul */
         }
 
         /* Día sin hábitos activos (más opaco) */
         .cal-day.inactive-day {
-            opacity: 0.4;
-            background: #f4f6f8;
+            opacity: 0.4;             /* 40% opacidad (más transparente) */
+            background: #f4f6f8;      /* Fondo gris */
         }
 
         /* 
@@ -739,43 +785,43 @@
           Muestra "✓ Todo", "3/5", "—", etc.
         */
         .completion-badge {
-            display: block;
-            font-size: 0.7rem;
-            font-weight: bold;
-            margin-top: 5px;
-            border-radius: 20px;
-            padding: 2px;
+            display: block;           /* Ocupa toda la línea */
+            font-size: 0.7rem;        /* Tamaño pequeño */
+            font-weight: bold;        /* Negrita */
+            margin-top: 5px;          /* Espacio arriba */
+            border-radius: 20px;      /* Esquinas redondeadas */
+            padding: 2px;             /* Espacio interno */
         }
 
         /* Badge: todo completado (verde) */
         .badge-high {
-            background: #3ba87e;
-            color: white;
+            background: #3ba87e;      /* Verde */
+            color: white;             /* Texto blanco */
         }
 
         /* Badge: parcialmente completado (naranja) */
         .badge-medium {
-            background: #e9b35f;
-            color: #2d2f31;
+            background: #e9b35f;      /* Naranja */
+            color: #2d2f31;           /* Texto oscuro */
         }
 
         /* Badge: poco completado (rojo) */
         .badge-low {
-            background: #c94f4f;
-            color: white;
+            background: #c94f4f;      /* Rojo */
+            color: white;             /* Texto blanco */
         }
 
         /* Badge: sin hábitos activos (gris) */
         .badge-inactive {
-            background: #d4d9e0;
-            color: #6a7a8a;
+            background: #d4d9e0;      /* Gris */
+            color: #6a7a8a;           /* Texto gris oscuro */
         }
 
         /* Mensaje cuando no hay hábitos */
         .empty-message {
-            text-align: center;
-            padding: 2rem;
-            color: #7a93ab;
+            text-align: center;       /* Centrado */
+            padding: 2rem;            /* Espacio interno */
+            color: #7a93ab;           /* Color gris azulado */
         }
 
         /* 
@@ -783,27 +829,28 @@
           MODAL DE CONFIRMACIÓN (.modal-overlay)
           ==========================================
           Aparece para confirmar acciones importantes (eliminar, restablecer).
-          position: fixed → fijo en la pantalla.
+          position: fixed → fijo en la pantalla (no se mueve al hacer scroll).
           z-index: 1000 → siempre por encima de todo.
           display: none → oculto por defecto.
+          backdrop-filter: blur(3px) → desenfoca el fondo.
         */
         .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(3px);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
+            display: none;            /* Oculto por defecto */
+            position: fixed;          /* Fijo en la pantalla */
+            top: 0;                  /* Arriba del todo */
+            left: 0;                 /* Izquierda del todo */
+            width: 100%;              /* Ancho completo */
+            height: 100%;             /* Alto completo */
+            background: rgba(0,0,0,0.5); /* Fondo negro semi-transparente */
+            backdrop-filter: blur(3px); /* Desenfoque del fondo */
+            z-index: 1000;            /* Por encima de todo */
+            justify-content: center;  /* Centra horizontalmente */
+            align-items: center;      /* Centra verticalmente */
         }
 
         /* Modal activo (visible) */
         .modal-overlay.active {
-            display: flex;
+            display: flex;            /* Se muestra como flexbox */
         }
 
         /* 
@@ -813,66 +860,72 @@
           animation: modalFade → animación de entrada.
         */
         .modal-box {
-            background: white;
-            border-radius: 2rem;
-            padding: 2rem;
-            max-width: 400px;
-            width: 90%;
-            text-align: center;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3);
-            animation: modalFade 0.3s ease;
+            background: white;        /* Fondo blanco */
+            border-radius: 2rem;      /* Esquinas redondeadas */
+            padding: 2rem;            /* Espacio interno */
+            max-width: 400px;         /* Ancho máximo */
+            width: 90%;              /* 90% del ancho disponible */
+            text-align: center;       /* Texto centrado */
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3); /* Sombra grande */
+            animation: modalFade 0.3s ease; /* Animación de entrada */
         }
 
         /* Animación del modal: aparece desde abajo */
         @keyframes modalFade {
-            from { transform: scale(0.9); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+            from { 
+                transform: scale(0.9); /* 90% del tamaño */
+                opacity: 0;           /* Invisible */
+            }
+            to { 
+                transform: scale(1);   /* Tamaño normal */
+                opacity: 1;           /* Visible */
+            }
         }
 
         .modal-box h3 {
-            margin-bottom: 0.5rem;
-            color: #1f3b4a;
+            margin-bottom: 0.5rem;    /* Espacio abajo */
+            color: #1f3b4a;           /* Color oscuro */
         }
 
         .modal-box p {
-            color: #5c6f87;
-            margin-bottom: 1.5rem;
+            color: #5c6f87;           /* Color gris */
+            margin-bottom: 1.5rem;    /* Espacio abajo */
         }
 
         /* Botones del modal: Cancelar y Confirmar */
         .modal-actions {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
+            display: flex;            /* Flexbox */
+            gap: 1rem;              /* Espacio entre botones */
+            justify-content: center;  /* Centrado */
         }
 
         .modal-btn {
-            padding: 0.6rem 2rem;
-            border-radius: 2rem;
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
+            padding: 0.6rem 2rem;     /* Espacio interno */
+            border-radius: 2rem;      /* Esquinas redondeadas */
+            border: none;             /* Sin borde */
+            font-weight: 600;         /* Negrita */
+            cursor: pointer;          /* Mano al pasar */
+            transition: 0.2s;         /* Animación suave */
         }
 
         /* Botón de confirmar (rojo) */
         .modal-btn.confirm {
-            background: #e15a46;
-            color: white;
+            background: #e15a46;      /* Rojo */
+            color: white;             /* Texto blanco */
         }
 
         .modal-btn.confirm:hover {
-            background: #c94a36;
+            background: #c94a36;      /* Rojo más oscuro */
         }
 
         /* Botón de cancelar (gris) */
         .modal-btn.cancel {
-            background: #eef2f7;
-            color: #4a627a;
+            background: #eef2f7;      /* Gris claro */
+            color: #4a627a;           /* Texto gris oscuro */
         }
 
         .modal-btn.cancel:hover {
-            background: #d9e2ec;
+            background: #d9e2ec;      /* Gris más oscuro */
         }
 
         /* 
@@ -880,12 +933,13 @@
           PIE DE PÁGINA (footer)
           ==========================================
           Texto pequeño al final con información de ayuda.
+          Es informativo y no interactivo.
         */
         footer {
-            font-size: 0.7rem;
-            text-align: center;
-            margin-top: 1.8rem;
-            color: #68829e;
+            font-size: 0.7rem;        /* Tamaño pequeño */
+            text-align: center;       /* Centrado */
+            margin-top: 1.8rem;       /* Espacio arriba */
+            color: #68829e;           /* Color gris azulado */
         }
 
         /* 
@@ -894,43 +948,44 @@
           ==========================================
           @media (max-width: 650px) → cuando la pantalla es pequeña.
           Ajusta tamaños y distribuciones para que se vea bien en móvil.
+          Esto es CRUCIAL para la experiencia en celular.
         */
         @media (max-width: 650px) {
             .app {
-                padding: 1rem;
+                padding: 1rem;        /* Menos espacio interno */
             }
             .calendar-grid {
-                gap: 4px;
+                gap: 4px;            /* Menos espacio entre celdas */
             }
             .cal-day {
-                padding: 0.4rem 0.1rem;
-                font-size: 0.8rem;
+                padding: 0.4rem 0.1rem; /* Menos espacio interno */
+                font-size: 0.8rem;    /* Texto más pequeño */
             }
             .add-habit-row {
-                flex-direction: column;
+                flex-direction: column; /* Apila input y botón */
             }
             .add-habit-row input {
-                width: 100%;
+                width: 100%;          /* Ocupa todo el ancho */
             }
             .days-selector {
-                justify-content: center;
+                justify-content: center; /* Centra los botones */
             }
             .habit-info {
-                gap: 0.5rem;
+                gap: 0.5rem;          /* Menos espacio entre elementos */
             }
             .tabs {
-                flex-direction: column;
-                align-items: stretch;
+                flex-direction: column; /* Apila las pestañas */
+                align-items: stretch;   /* Estira al ancho completo */
             }
             .tab-group {
-                justify-content: center;
+                justify-content: center; /* Centra las pestañas */
             }
             .reset-btn {
-                align-self: center;
+                align-self: center;    /* Centra el botón */
             }
             .summary-panel {
-                grid-template-columns: repeat(2, 1fr);
-                padding: 0.8rem;
+                grid-template-columns: repeat(2, 1fr); /* 2 columnas en móvil */
+                padding: 0.8rem;       /* Menos espacio interno */
             }
         }
     </style>
@@ -942,6 +997,7 @@
   ============================================
   Aquí está todo el contenido visible de la aplicación.
   HTML + CSS + JavaScript trabajan juntos para crear la interfaz.
+  Esto es lo que el usuario ve y con lo que interactúa.
 -->
 <body>
 <div class="app">
@@ -949,6 +1005,7 @@
       ==========================================
       PESTAÑAS DE NAVEGACIÓN
       ==========================================
+      Barra superior con las pestañas y el botón de restablecer.
     -->
     <div class="tabs">
         <!-- Grupo de botones de pestañas -->
@@ -957,6 +1014,7 @@
               Pestaña "Hoy / Día" (activa por defecto)
               data-tab="today" → identifica qué pestaña es
               class="tab-btn active" → visible por defecto
+              El usuario puede cambiar entre pestañas tocando estos botones.
             -->
             <button class="tab-btn active" data-tab="today">📅 Hoy / Día</button>
             
@@ -974,6 +1032,7 @@
       ==========================================
       id="todayTab" → identificador único para JavaScript
       class="tab-content active-tab" → visible por defecto
+      Esta es la vista principal donde el usuario ve y marca sus hábitos.
     -->
     <div id="todayTab" class="tab-content active-tab">
         <!-- 
@@ -986,53 +1045,16 @@
             <!-- 
               Fecha seleccionada.
               id="selectedDateLabel" → JavaScript actualiza este texto.
+              Por defecto muestra "Hoy", luego se actualiza con la fecha.
             -->
             <div class="selected-date" id="selectedDateLabel">Hoy</div>
             
             <!-- 
               Estadísticas: completados/total.
               id="dailyStatsLabel" → JavaScript actualiza este texto.
+              Ejemplo: "3/5 completados"
             -->
             <div class="stats-small" id="dailyStatsLabel">0/0 completados</div>
-        </div>
-
-        <!-- 
-          ==========================================
-          PANEL DE RESUMEN DIARIO (NUEVO)
-          ==========================================
-          Muestra 4 estadísticas clave del día:
-          1. Completados hoy
-          2. Pendientes
-          3. Porcentaje de progreso
-          4. Racha de días completos
-        -->
-        <div class="summary-panel" id="summaryPanel">
-            <!-- Completados hoy -->
-            <div class="summary-item">
-                <span class="number" id="summaryCompleted">0</span>
-                <span class="label">✅ Completados hoy</span>
-            </div>
-            
-            <!-- Pendientes hoy -->
-            <div class="summary-item">
-                <span class="number" id="summaryPending">0</span>
-                <span class="label">⏳ Pendientes</span>
-            </div>
-            
-            <!-- Porcentaje de progreso -->
-            <div class="summary-item">
-                <span class="number" id="summaryPercentage">0%</span>
-                <span class="label">📊 Progreso</span>
-            </div>
-            
-            <!-- 
-              Racha de días completos (NUEVO)
-              Muestra días consecutivos completando TODOS los hábitos.
-            -->
-            <div class="summary-item">
-                <span class="streak-fire" id="summaryStreak">🔥 0</span>
-                <span class="label">Racha de días completos</span>
-            </div>
         </div>
 
         <!-- 
@@ -1040,6 +1062,7 @@
           ÁREA PARA AGREGAR HÁBITOS
           ==========================================
           Contiene: input, botón y selector de días.
+          Es donde el usuario crea nuevos hábitos.
         -->
         <div class="add-habit-area">
             <!-- Fila superior: input y botón -->
@@ -1056,6 +1079,7 @@
                   Botón crear hábito.
                   id="createHabitBtn" → JavaScript detecta el clic.
                   También se usa para modo edición (cambia a "Actualizar").
+                  Al hacer clic, crea un nuevo hábito o actualiza uno existente.
                 -->
                 <button id="createHabitBtn">+ Crear</button>
             </div>
@@ -1065,6 +1089,7 @@
               Cada botón tiene data-day con el número del día.
               0=Lunes, 1=Martes, ..., 6=Domingo.
               class="day-btn selected" → por defecto todos seleccionados.
+              El usuario puede tocar cada día para activar/desactivar.
             -->
             <div class="days-selector">
                 <label>📅 Repetir:</label>
@@ -1088,6 +1113,7 @@
           ==========================================
           chart.js dibuja una gráfica de dona aquí.
           id="progressChart" → JavaScript lo usa para dibujar.
+          Muestra visualmente el porcentaje de cumplimiento del día.
         -->
         <div class="chart-container">
             <canvas id="progressChart" width="400" height="180" style="max-width:100%; height:auto;"></canvas>
@@ -1098,12 +1124,57 @@
           LISTA DE HÁBITOS DEL DÍA
           ==========================================
           id="habitsListToday" → JavaScript genera el contenido aquí.
-          El contenido se genera dinámicamente.
+          El contenido se genera dinámicamente según los hábitos del día.
+          Es la parte principal de la app: el usuario marca sus hábitos aquí.
         -->
         <ul id="habitsListToday" class="habits-list">
             <!-- Mensaje de carga inicial -->
             <li class="empty-message">Cargando hábitos...</li>
         </ul>
+
+        <!-- 
+          ==========================================
+          PANEL DE RESUMEN DIARIO (MOVIDO AL FINAL)
+          ==========================================
+          Ahora está DESPUÉS de la lista de hábitos.
+          Muestra 4 estadísticas clave del día:
+          1. Completados hoy
+          2. Pendientes
+          3. Porcentaje de progreso
+          4. Racha de días completos
+          
+          Está al final para no ocupar espacio al abrir la app.
+          El usuario primero ve los hábitos y luego el resumen.
+        -->
+        <div class="summary-panel" id="summaryPanel">
+            <!-- Completados hoy -->
+            <div class="summary-item">
+                <span class="number" id="summaryCompleted">0</span>
+                <span class="label">✅ Completados hoy</span>
+            </div>
+            
+            <!-- Pendientes hoy -->
+            <div class="summary-item">
+                <span class="number" id="summaryPending">0</span>
+                <span class="label">⏳ Pendientes</span>
+            </div>
+            
+            <!-- Porcentaje de progreso -->
+            <div class="summary-item">
+                <span class="number" id="summaryPercentage">0%</span>
+                <span class="label">📊 Progreso</span>
+            </div>
+            
+            <!-- 
+              Racha de días completos
+              Muestra días consecutivos completando TODOS los hábitos.
+              Ejemplo: "🔥 5 días completos"
+            -->
+            <div class="summary-item">
+                <span class="streak-fire" id="summaryStreak">🔥 0</span>
+                <span class="label">Racha de días completos</span>
+            </div>
+        </div>
     </div>
 
     <!-- 
@@ -1112,11 +1183,13 @@
       ==========================================
       id="calendarTab" → identificador único
       class="tab-content" → oculto por defecto
+      Muestra un calendario mensual con el progreso de cada día.
     -->
     <div id="calendarTab" class="tab-content">
         <!-- 
           Encabezado del calendario.
           Tiene navegación (◀ ▶) y muestra el mes/año.
+          El usuario puede navegar entre meses.
         -->
         <div class="calendar-header">
             <button id="prevMonth" class="month-nav">◀</button>
@@ -1127,6 +1200,7 @@
         <!-- 
           Cuadrícula del calendario.
           id="calendarGrid" → JavaScript genera el contenido aquí.
+          Cada día muestra un badge con el progreso.
         -->
         <div class="calendar-grid" id="calendarGrid"></div>
         
@@ -1139,6 +1213,7 @@
       PIE DE PÁGINA
       ==========================================
       Texto informativo al final de la página.
+      Explica brevemente cómo funciona la app.
     -->
     <footer>✅ Cada hábito se registra por día. Marca el check para cumplirlo. Los datos se guardan automáticamente.</footer>
 </div>
@@ -1149,6 +1224,8 @@
   ==========================================
   Aparece cuando el usuario intenta eliminar un hábito.
   id="confirmModal" → identificador único.
+  Es una capa superpuesta que pide confirmación.
+  Evita que el usuario elimine por accidente.
 -->
 <div class="modal-overlay" id="confirmModal">
     <div class="modal-box">
@@ -1167,6 +1244,7 @@
   ==========================================
   Aparece cuando el usuario intenta restablecer hábitos.
   id="resetModal" → identificador único.
+  Pide confirmación antes de reemplazar todos los hábitos.
 -->
 <div class="modal-overlay" id="resetModal">
     <div class="modal-box">
@@ -1189,7 +1267,10 @@
   
   El código se ejecuta cuando la página carga.
   Lee de arriba hacia abajo en orden.
+  
+  JavaScript es el lenguaje de programación que da vida a la app.
 -->
+
 <script>
     // ==========================================
     // 1. DATOS PREDEFINIDOS
@@ -1234,19 +1315,23 @@
     // - days: array de días activos
     // - completions: objeto con fechas y si está completado
     //   Ejemplo: { "2026-07-03": true, "2026-07-02": false }
+    //   Esto guarda el historial de cumplimiento de cada hábito.
     //
     let habits = [];
     
     // currentViewDate: fecha que el usuario está viendo en la pestaña "Hoy"
     // Por defecto es la fecha actual
+    // Puede cambiar cuando el usuario hace clic en un día del calendario.
     let currentViewDate = new Date();
     
     // currentCalendarYear/Month: año y mes que está viendo en el calendario
+    // Estos se usan para navegar entre meses en el calendario.
     let currentCalendarYear = new Date().getFullYear();
     let currentCalendarMonth = new Date().getMonth(); // 0-11 (enero = 0)
     
     // pendingDeleteId: guarda el ID del hábito que se quiere eliminar
     // Se usa en el modal de confirmación
+    // Se almacena temporalmente hasta que el usuario confirme o cancele.
     let pendingDeleteId = null;
 
     // ==========================================
@@ -1256,6 +1341,9 @@
     // DOM = Document Object Model (la estructura HTML)
     // Estas variables guardan referencias a los elementos HTML
     // para poder manipularlos con JavaScript
+    // 
+    // Es como tener "accesos directos" a los elementos de la página.
+    // Así no tenemos que buscarlos cada vez que los necesitamos.
     //
     const habitsListEl = document.getElementById('habitsListToday');
     const selectedDateLabel = document.getElementById('selectedDateLabel');
@@ -1279,10 +1367,12 @@
     const clearAllBtn = document.getElementById('clearAllDays');
     
     // progressChart: variable para la gráfica (se inicializa luego)
+    // Guarda la instancia de la gráfica para poder actualizarla.
     let progressChart = null;
     
     // selectedDays: días seleccionados en el selector al crear/editar
     // Por defecto todos los días (0-6)
+    // Cambia cuando el usuario toca los botones de días.
     let selectedDays = [0, 1, 2, 3, 4, 5, 6];
 
     // ==========================================
@@ -1291,6 +1381,9 @@
     // 
     // Estas funciones manejan fechas en formato YYYY-MM-DD
     // Usamos formato local para evitar problemas de zona horaria
+    // 
+    // Las fechas son complicadas porque cada país tiene su zona horaria.
+    // Usamos formato local (sin UTC) para que funcione correctamente.
     //
 
     /**
@@ -1299,14 +1392,15 @@
      * @returns {string} Fecha en formato YYYY-MM-DD
      * 
      * Ejemplo: new Date(2026, 6, 3) → "2026-07-03"
+     * 
+     * getFullYear(): obtiene el año (ej: 2026)
+     * getMonth(): 0-11, sumamos 1 para que sea 1-12
+     * padStart(2, '0'): asegura que tenga 2 dígitos (ej: "07")
+     * getDate(): día del mes (1-31)
      */
     function formatLocalDate(date) {
-        // getFullYear(): obtiene el año (ej: 2026)
         let y = date.getFullYear();
-        // getMonth(): 0-11, sumamos 1 para que sea 1-12
-        // padStart(2, '0'): asegura que tenga 2 dígitos (ej: "07")
         let m = String(date.getMonth() + 1).padStart(2, '0');
-        // getDate(): día del mes (1-31)
         let d = String(date.getDate()).padStart(2, '0');
         return `${y}-${m}-${d}`;
     }
@@ -1314,6 +1408,8 @@
     /**
      * Obtiene la fecha de hoy en formato YYYY-MM-DD
      * @returns {string} Fecha de hoy
+     * 
+     * new Date() sin parámetros crea la fecha actual.
      */
     function getTodayLocalStr() {
         return formatLocalDate(new Date());
@@ -1325,12 +1421,13 @@
      * @returns {Date} Objeto Date local
      * 
      * Ejemplo: "2026-07-03" → new Date(2026, 6, 3)
+     * 
+     * split('-') divide el string en partes: ["2026", "07", "03"]
+     * map(Number) convierte cada parte a número
+     * new Date(año, mes-1, día) → mes-1 porque enero = 0
      */
     function parseLocalDate(dateStr) {
-        // split('-') divide el string en partes: ["2026", "07", "03"]
-        // map(Number) convierte cada parte a número
         let [y, m, d] = dateStr.split('-').map(Number);
-        // new Date(año, mes-1, día) → mes-1 porque enero = 0
         return new Date(y, m - 1, d);
     }
 
@@ -1357,15 +1454,15 @@
      * - Si JS devuelve 0 (Domingo) → nuestro sistema es 6
      * - Si JS devuelve 1 (Lunes) → nuestro sistema es 0
      * - Si JS devuelve 5 (Viernes) → nuestro sistema es 4
+     * 
+     * Esta conversión es CRUCIAL para que los días coincidan.
      */
     function getDayOfWeek(dateStr) {
         const date = parseLocalDate(dateStr);
         const jsDay = date.getDay(); // 0-6 en el sistema de JavaScript
         
-        // Si es domingo (0 en JS), en nuestro sistema es 6
-        if (jsDay === 0) return 6;
-        // Si no, restamos 1 (Lunes: 1→0, Martes: 2→1, etc.)
-        return jsDay - 1;
+        if (jsDay === 0) return 6; // Domingo (0 en JS) → 6 en nuestro sistema
+        return jsDay - 1; // Lunes (1 en JS) → 0 en nuestro sistema
     }
 
     // ==========================================
@@ -1385,7 +1482,7 @@
      * @returns {boolean} true si está activo, false si no
      * 
      * Un hábito está activo si:
-     * - No tiene días definidos (days vacío)
+     * - No tiene días definidos (days vacío) → activo siempre
      * - O el día de la semana está en su lista de días
      */
     function isHabitActiveOnDate(habit, dateStr) {
@@ -1407,6 +1504,8 @@
      * 
      * Los completados se guardan en habit.completions
      * Ejemplo: habit.completions["2026-07-03"] = true
+     * 
+     * .completions es un objeto donde las claves son fechas y los valores son booleanos.
      */
     function isHabitCompletedOnDate(habit, dateStr) {
         // Si no tiene el objeto completions, devuelve false
@@ -1419,9 +1518,11 @@
      * Obtiene todos los hábitos activos para una fecha
      * @param {string} dateStr - Fecha en formato YYYY-MM-DD
      * @returns {Array} Lista de hábitos activos
+     * 
+     * filter: crea un nuevo array solo con los que cumplen la condición.
+     * Es como un "filtro" que selecciona solo los hábitos activos.
      */
     function getActiveHabitsForDate(dateStr) {
-        // filter: crea un nuevo array solo con los que cumplen la condición
         return habits.filter(h => isHabitActiveOnDate(h, dateStr));
     }
 
@@ -1429,18 +1530,14 @@
      * Calcula el porcentaje de cumplimiento para una fecha
      * @param {string} dateStr - Fecha en formato YYYY-MM-DD
      * @returns {number} Porcentaje (0-100)
+     * 
+     * Fórmula: (completados / total) * 100
+     * Si no hay hábitos, devuelve 0.
      */
     function getCompletionPercentageForDate(dateStr) {
-        // Obtener hábitos activos para esta fecha
         const activeHabits = getActiveHabitsForDate(dateStr);
-        
-        // Si no hay hábitos activos, el porcentaje es 0
         if (activeHabits.length === 0) return 0;
-        
-        // Contar cuántos están completados
         let completedCount = activeHabits.filter(h => isHabitCompletedOnDate(h, dateStr)).length;
-        
-        // Calcular porcentaje
         return (completedCount / activeHabits.length) * 100;
     }
 
@@ -1450,6 +1547,8 @@
     // 
     // La racha (streak) cuenta cuántos días seguidos se ha completado un hábito
     // También calcula la racha de días completos (todos los hábitos)
+    // 
+    // La racha es una de las características más motivadoras de la app.
     //
 
     /**
@@ -1515,10 +1614,6 @@
         return streak;
     }
 
-    // ==========================================
-    // NUEVA FUNCIÓN: Racha de días completos
-    // ==========================================
-
     /**
      * Calcula la racha de días completos (días consecutivos donde 
      * se completaron TODOS los hábitos activos)
@@ -1532,6 +1627,8 @@
      * 3. Verifica si TODOS están completados
      * 4. Si todos están completados, suma 1 y sigue hacia atrás
      * 5. Si falta alguno, la racha se rompe
+     * 
+     * Esta es una racha "general" que mide la consistencia global.
      */
     function calculateDailyStreak(dateStr) {
         let streak = 0;
@@ -1603,6 +1700,8 @@
      * 2. Cuenta cuántos están completados
      * 3. Si todos están completados → felicita al usuario
      * 4. Si faltan algunos → muestra cuáles son
+     * 
+     * Esta función se ejecuta automáticamente al abrir la app.
      */
     function showDailyReminder() {
         const todayStr = getTodayLocalStr();
@@ -1637,6 +1736,7 @@
      */
     function showNotification(message, type = 'info') {
         // Intentar usar la API de notificaciones del navegador
+        // Esto requiere permiso del usuario (se solicita al cargar)
         if ('Notification' in window && Notification.permission === 'granted') {
             new Notification('📋 Mis Hábitos', {
                 body: message,
@@ -1646,6 +1746,7 @@
         }
         
         // Si no hay permisos, mostrar mensaje en la interfaz
+        // Creamos un elemento div flotante que aparece desde abajo
         const notifDiv = document.createElement('div');
         notifDiv.style.position = 'fixed';
         notifDiv.style.bottom = '20px';
@@ -1660,14 +1761,14 @@
         
         // Color según el tipo de mensaje
         if (type === 'success') {
-            notifDiv.style.backgroundColor = '#d4edda';
-            notifDiv.style.color = '#155724';
+            notifDiv.style.backgroundColor = '#d4edda'; // Verde claro
+            notifDiv.style.color = '#155724';          // Verde oscuro
         } else if (type === 'warning') {
-            notifDiv.style.backgroundColor = '#fff3cd';
-            notifDiv.style.color = '#856404';
+            notifDiv.style.backgroundColor = '#fff3cd'; // Amarillo claro
+            notifDiv.style.color = '#856404';          // Marrón oscuro
         } else {
-            notifDiv.style.backgroundColor = '#cce5ff';
-            notifDiv.style.color = '#004085';
+            notifDiv.style.backgroundColor = '#cce5ff'; // Azul claro
+            notifDiv.style.color = '#004085';          // Azul oscuro
         }
         
         notifDiv.textContent = message;
@@ -1705,12 +1806,12 @@
         const pendingCount = activeHabits.length - completedCount;
         const percentage = activeHabits.length > 0 ? Math.round((completedCount / activeHabits.length) * 100) : 0;
         
-        // Actualizar los números del panel
+        // Actualizar los números del panel usando los IDs de los elementos HTML
         document.getElementById('summaryCompleted').textContent = completedCount;
         document.getElementById('summaryPending').textContent = pendingCount;
         document.getElementById('summaryPercentage').textContent = percentage + '%';
         
-        // ========== NUEVO: Calcular racha de días completos ==========
+        // Calcular racha de días completos
         const dailyStreak = calculateDailyStreak(dateStr);
         let streakDisplay = '🔥 0 días';
         if (dailyStreak > 0) {
@@ -1726,6 +1827,8 @@
     // Estas funciones guardan y cargan datos en localStorage
     // localStorage es como una pequeña base de datos en el navegador
     // Los datos persisten incluso después de cerrar la página
+    // 
+    // Esto permite que los hábitos no se pierdan al cerrar la app.
     //
 
     /**
@@ -1739,6 +1842,8 @@
      *   habits: [...],
      *   version: '3.0'
      * }
+     * 
+     * La versión ayuda a identificar el formato de los datos.
      */
     function saveToLocalStorage() {
         localStorage.setItem('habitCalendarApp', JSON.stringify({ 
@@ -1752,9 +1857,11 @@
      * 
      * Crea una copia de DEFAULT_HABITS y los guarda en localStorage
      * Cada hábito empieza sin completados (completions: {})
+     * 
+     * map: crea un nuevo array copiando los datos de DEFAULT_HABITS.
+     * ...h: "spread operator", copia todas las propiedades del hábito.
      */
     function loadDefaultHabits() {
-        // map: crea un nuevo array copiando los datos
         habits = DEFAULT_HABITS.map(h => ({
             ...h,  // Copia todas las propiedades del hábito
             completions: {}  // Añade completions vacío
@@ -1765,13 +1872,15 @@
     /**
      * Carga los datos guardados en localStorage
      * Si no hay datos o son inválidos, carga los predefinidos
+     * 
+     * try...catch: maneja errores (si los datos están corruptos)
      */
     function loadData() {
         const stored = localStorage.getItem('habitCalendarApp');
         
         if (stored) {
             try {
-                const parsed = JSON.parse(stored);
+                const parsed = JSON.parse(stored); // Convierte string a objeto
                 
                 // Verificar que los datos sean válidos
                 if (parsed.habits && Array.isArray(parsed.habits) && parsed.habits.length > 0) {
@@ -1807,6 +1916,8 @@
     /**
      * Restablece los hábitos a los valores predefinidos
      * Se usa cuando el usuario presiona el botón "Restablecer hábitos"
+     * 
+     * Carga los hábitos predefinidos y actualiza todas las vistas.
      */
     function resetToDefaults() {
         loadDefaultHabits();
@@ -1821,6 +1932,8 @@
     // 
     // CRUD son las 4 operaciones básicas:
     // Create (crear), Read (leer), Update (actualizar), Delete (eliminar)
+    // 
+    // Estas funciones manejan toda la manipulación de datos.
     //
 
     /**
@@ -1829,7 +1942,7 @@
      * @param {string} dateStr - Fecha en formato YYYY-MM-DD
      * @param {boolean} completed - true = completado, false = no completado
      * 
-     * 1. Busca el hábito por su ID
+     * 1. Busca el hábito por su ID (find)
      * 2. Si no existe, termina
      * 3. Si no tiene completions, lo crea
      * 4. Si completed es true, guarda la fecha
@@ -1885,15 +1998,17 @@
      * 
      * 1. Elimina espacios al inicio y final (trim)
      * 2. Si está vacío, no agrega
-     * 3. Genera un ID único basado en el timestamp
+     * 3. Genera un ID único basado en el timestamp (Date.now())
      * 4. Crea el hábito con completions vacío
      * 5. Guarda y actualiza vista
+     * 
+     * Date.now(): devuelve los milisegundos desde 1970, es único.
      */
     function addNewHabit(name, days) {
         const trimmed = name.trim();
         if (trimmed === "") return false;
         
-        // ID único usando timestamp + número aleatorio
+        // ID único usando timestamp + prefijo 'h'
         const newId = 'h' + Date.now();
         
         habits.push({
@@ -1916,6 +2031,8 @@
     // 
     // Estas funciones actualizan la interfaz de usuario
     // para mostrar los datos actuales
+    // 
+    // "Renderizar" significa "dibujar en pantalla".
     //
 
     /**
@@ -1927,6 +2044,8 @@
      * 4. Para cada hábito, crea una tarjeta HTML
      * 5. Muestra el nombre, días, y la racha (streak)
      * 6. Actualiza las estadísticas y el resumen
+     * 
+     * Esta es la función más importante de la vista "Hoy".
      */
     function renderTodayTab() {
         // 1. Obtener fecha actual de la vista
@@ -1967,6 +2086,8 @@
         let completedToday = 0;
         const dayNames = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
         
+        // map: transforma cada hábito en HTML
+        // join(''): une todos los strings en uno solo
         const itemsHtml = activeHabits.map(habit => {
             // Verificar si está completado hoy
             const completed = isHabitCompletedOnDate(habit, dateStr);
@@ -2007,6 +2128,7 @@
         updateDailySummary();
 
         // 7. Asignar eventos a los checkboxes
+        // Cada checkbox al cambiar llama a setHabitCompletion
         document.querySelectorAll('.habit-check').forEach(cb => {
             cb.addEventListener('change', (e) => {
                 const hid = cb.getAttribute('data-id');
@@ -2069,9 +2191,12 @@
         const firstDayOfMonth = new Date(year, month, 1);
         
         // Calcular el desplazamiento para que la semana empiece en Lunes
-        let startWeekday = firstDayOfMonth.getDay(); // 0=Dom, 1=Lun...
+        // getDay(): 0=Dom, 1=Lun, 2=Mar, ...
+        let startWeekday = firstDayOfMonth.getDay();
+        // Si es Domingo (0), el offset es 6 (para que empiece en Lunes)
+        // Si es Lunes (1), el offset es 0
         let startOffset = (startWeekday === 0 ? 6 : startWeekday - 1);
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const daysInMonth = new Date(year, month + 1, 0).getDate(); // Días del mes
         const currentViewStr = getCurrentViewDateStr();
 
         let calendarHtml = '';
@@ -2151,6 +2276,9 @@
      * 2. Si ya existe una gráfica, la destruye
      * 3. Crea una nueva gráfica con Chart.js
      * 4. Muestra "Completado" y "Pendiente" con colores
+     * 
+     * Chart.js es la librería que dibuja la gráfica.
+     * La gráfica es un "dona" (doughnut) que muestra el porcentaje.
      */
     function updateChart() {
         const dateStr = getCurrentViewDateStr();
@@ -2162,12 +2290,12 @@
         
         // Crear nueva gráfica de dona
         progressChart = new Chart(ctx, {
-            type: 'doughnut',
+            type: 'doughnut', // Tipo: dona (como una rosquilla)
             data: {
                 labels: ['Completado', 'Pendiente'],
                 datasets: [{
                     data: [percent, 100 - percent],
-                    backgroundColor: ['#3ba87e', '#e2e8f0'],
+                    backgroundColor: ['#3ba87e', '#e2e8f0'], // Verde y gris
                     borderWidth: 0,
                     cutout: '65%' // Tamaño del agujero
                 }]
@@ -2194,6 +2322,8 @@
     /**
      * Actualiza la selección de días en el selector
      * Marca con la clase 'selected' los días que están en selectedDays
+     * 
+     * Recorre todos los botones de días y les añade o quita la clase 'selected'.
      */
     function updateDaySelection() {
         dayBtns.forEach(btn => {
@@ -2209,6 +2339,10 @@
     /**
      * Alterna la selección de un día en el selector
      * @param {number} day - Día a alternar (0-6)
+     * 
+     * Si el día está seleccionado, lo quita.
+     * Si no está seleccionado, lo agrega.
+     * Luego ordena los días para mantener consistencia.
      */
     function toggleDay(day) {
         const index = selectedDays.indexOf(day);
@@ -2218,7 +2352,7 @@
         } else {
             // Si no está seleccionado, lo agregamos
             selectedDays.push(day);
-            selectedDays.sort((a, b) => a - b);
+            selectedDays.sort((a, b) => a - b); // Ordenar ascendente
         }
         updateDaySelection();
     }
@@ -2226,6 +2360,8 @@
     /**
      * Cambia el mes del calendario
      * @param {number} delta - 1 para avanzar, -1 para retroceder
+     * 
+     * Maneja el cambio de año si es necesario.
      */
     function changeMonth(delta) {
         let newMonth = currentCalendarMonth + delta;
@@ -2247,6 +2383,9 @@
     /**
      * Cambia entre las pestañas "Hoy" y "Calendario"
      * @param {string} tabId - 'today' o 'calendar'
+     * 
+     * Oculta todas las pestañas y muestra la seleccionada.
+     * También actualiza los botones para que se vea cuál está activo.
      */
     function switchTab(tabId) {
         // Ocultar todas las pestañas
@@ -2269,6 +2408,9 @@
      * Escapa caracteres especiales en HTML para evitar problemas de seguridad
      * @param {string} str - Texto a escapar
      * @returns {string} Texto seguro para HTML
+     * 
+     * Reemplaza caracteres como <, >, & por su versión segura.
+     * Evita que el usuario pueda inyectar código HTML malicioso.
      */
     function escapeHtml(str) {
         return str.replace(/[&<>]/g, function(m) {
@@ -2285,6 +2427,8 @@
     // 
     // Esta función se ejecuta cuando la página carga
     // Configura todo y asigna los eventos
+    // 
+    // Es el "punto de entrada" de la aplicación.
     //
 
     function init() {
@@ -2307,7 +2451,7 @@
         // 5. Mostrar recordatorio al cargar (solo si es hoy)
         const todayStr = getTodayLocalStr();
         if (getCurrentViewDateStr() === todayStr) {
-            setTimeout(showDailyReminder, 1000);
+            setTimeout(showDailyReminder, 1000); // Esperar 1 segundo
         }
 
         // 6. Botón Restablecer
@@ -2427,6 +2571,9 @@
     // ==========================================
     // 
     // Esto inicia todo cuando la página termina de cargar
+    // 
+    // La función init() se ejecuta y toda la app cobra vida.
+    // Sin esta llamada, nada funcionaría.
     //
     init();
 </script>
